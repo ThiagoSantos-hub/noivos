@@ -39,7 +39,7 @@ export function LoginForm({
     }))
     // Limpar erro do campo quando o usuário começa a digitar
     if (touched[name]) {
-      const newErrors = validateLoginForm({
+      const newErrors = loginValidations.validateLoginForm({
         ...formData,
         [name]: value,
       })
@@ -54,7 +54,7 @@ export function LoginForm({
       [name]: true,
     }))
     // Validar o campo ao sair do foco
-    const newErrors = validateLoginForm(formData)
+    const newErrors = loginValidations.validateLoginForm(formData)
     setErrors(newErrors)
   }
 

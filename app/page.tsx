@@ -131,7 +131,15 @@ export default function LandingPage() {
           <div className="bg-white p-8 rounded-3xl shadow-xl border border-slate-100 mb-10">
             <h4 className="text-2xl font-bold text-slate-800 mb-2">Plano Noivos Pro</h4>
             <p className="text-slate-500 mb-6">Tudo o que você precisa na palma da mão</p>
-            <div className="text-5xl font-bold text-green-600 mb-6">R$ 9,90<span className="text-lg text-slate-400 font-normal">/mês</span></div>
+            <div className="mb-6">
+              <div className="flex items-center justify-center gap-3 mb-2">
+                <span className="text-2xl text-slate-400 line-through">R$ 47,90</span>
+                <span className="bg-red-500 text-white px-3 py-1 rounded-full text-sm font-bold">-79%</span>
+              </div>
+              <div className="text-5xl font-bold text-green-600">
+                R$ 9,90<span className="text-lg text-slate-400 font-normal">/mês</span>
+              </div>
+            </div>
             <ul className="text-left text-slate-600 space-y-3 mb-8">
               <li className="flex items-center gap-2">
                 <svg className="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20"><path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"/></svg>

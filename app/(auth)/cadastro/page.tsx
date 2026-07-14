@@ -62,9 +62,24 @@ export default function OnboardingPage() {
 
       setProgress(100)
 
-      // Redirecionar para o dashboard após sucesso
+      // 3. Criar checkout no Asaas
+      const checkoutResponse = await fetch('/api/payments/create-checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      })
+
+      const checkoutData = await checkoutResponse.json()
+
+      if (!checkoutResponse.ok) {
+        throw new Error(checkoutData.error || 'Erro ao gerar pagamento')
+      }
+
+      setProgress(100)
+
+      // Redirecionar para o checkout do Asaas
       setTimeout(() => {
-        router.push('/inicio')
+        window.location.href = checkoutData.checkoutUrl
       }, 500)
     } catch (err) {
       setProgress(0)

@@ -139,3 +139,14 @@ BREVO_API_KEY=xkeysib-d924ab1f9f782c21cbb4abdc61b403d1451c6e6fdd54131efe2092ec24
 BREVO_SENDER_NAME=Noivos
 BREVO_SENDER_EMAIL=digitalalpha24@gmail.com
 ```
+
+143	---
+144	
+145	## 12. Pagamentos — Asaas
+146	
+147	```env
+148	ASAAS_API_KEY=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
+149	ASAAS_API_URL=https://www.asaas.com/api/v3
+150	PLAN_PRICE=9.90
+151	```
+152	

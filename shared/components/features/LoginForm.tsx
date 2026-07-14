@@ -11,7 +11,7 @@ import { Input } from '@/components/ui/Input'
 import { Button } from '@/components/ui/Button'
 import {
   validateLoginForm,
-  hasValidationErrors,
+  hasLoginValidationErrors,
   LoginValidationErrors,
 } from '@/utils/loginValidations'
 
@@ -69,7 +69,7 @@ export function LoginForm({
     // Validar formulário completo
     const newErrors = validateLoginForm(formData)
 
-    if (hasValidationErrors(newErrors)) {
+    if (hasLoginValidationErrors(newErrors)) {
       setErrors(newErrors)
       // Marcar todos os campos como tocados para mostrar erros
       setTouched({
@@ -89,7 +89,7 @@ export function LoginForm({
     }
   }
 
-  const isFormValid = !hasValidationErrors(errors)
+  const isFormValid = !hasLoginValidationErrors(errors)
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">

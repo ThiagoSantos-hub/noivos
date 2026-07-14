@@ -47,8 +47,8 @@ export function validateLoginForm(data: {
 }
 
 /**
- * Verifica se há erros de validação
+ * Verifica se há erros de validação de login
  */
-export function hasValidationErrors(errors: LoginValidationErrors): boolean {
+export function hasLoginValidationErrors(errors: LoginValidationErrors): boolean {
   return Object.values(errors).some((error) => error !== undefined)
 }

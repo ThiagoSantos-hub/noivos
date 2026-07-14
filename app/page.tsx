@@ -8,7 +8,7 @@
 
 import Image from 'next/image'
 import Link from 'next/link'
-import { useAuthRedirect } from '@/shared/hooks'
+import { useAuthRedirect } from '@/hooks/useAuthRedirect'
 
 export default function LandingPage() {
   const { isLoading } = useAuthRedirect('/inicio')

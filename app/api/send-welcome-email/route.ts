@@ -16,7 +16,7 @@ const SENDER = {
   email: process.env.BREVO_SENDER_EMAIL || 'digitalalpha24@gmail.com',
 }
 
-const APP_URL = 'https://noivos-git-staging-thiago-noivos.vercel.app'
+const APP_URL = 'https://noivosapp.store'
 const LOGO_URL = `${APP_URL}/images/aliancas.png`
 
 export async function POST(request: Request) {

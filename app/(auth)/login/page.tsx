@@ -8,6 +8,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import Image from 'next/image'
 import { LoginForm } from '@/components/features/LoginForm'
 
 export default function LoginPage(): React.ReactElement {
@@ -46,11 +47,22 @@ export default function LoginPage(): React.ReactElement {
   }
 
   return (
-    <div className="min-h-[calc(100vh-64px)] flex flex-col items-center justify-center px-6 py-12" style={{ backgroundColor: '#FFFFFF' }}>
+    <div className="min-h-screen flex flex-col items-center justify-center px-6 py-12" style={{ backgroundColor: '#FFFFFF' }}>
       <div className="w-full max-w-md">
         {/* Cabeçalho */}
-        <div className="mb-8 text-center">
-          <h1 className="text-3xl font-bold mb-2" style={{ color: '#1E293B' }}>
+        <div className="mb-8 text-center flex flex-col items-center">
+          <div className="mb-1">
+            <div className="relative w-[80px] h-[80px] md:w-[120px] md:h-[120px]">
+              <Image
+                src="/images/aliancas.png"
+                alt="Alianças de casamento"
+                fill
+                style={{ objectFit: 'contain' }}
+                priority
+              />
+            </div>
+          </div>
+          <h1 className="text-2xl md:text-3xl font-bold mb-2" style={{ color: '#1E293B' }}>
             Bem-vindo de Volta
           </h1>
           <p className="text-base" style={{ color: '#64748B' }}>

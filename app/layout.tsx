@@ -1,6 +1,5 @@
 import type { Metadata, Viewport } from 'next'
 import './globals.css'
-import { Header } from '@/components/ui/Header'
 
 export const metadata: Metadata = {
   title: 'Noivos - Planejamento de Casamento',
@@ -35,12 +34,7 @@ export default function RootLayout({
         <meta name="apple-mobile-web-app-title" content="Noivos" />
         <link rel="apple-touch-icon" href="/images/aliancas.png" />
       </head>
-      <body className="flex flex-col min-h-screen">
-        <Header />
-        <main className="flex-1">
-          {children}
-        </main>
-      </body>
+      <body>{children}</body>
     </html>
   )
 }

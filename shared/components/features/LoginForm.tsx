@@ -9,11 +9,8 @@ import React, { useState } from 'react'
 import Link from 'next/link'
 import { Input } from '@/components/ui/Input'
 import { Button } from '@/components/ui/Button'
-import {
-  validateLoginForm,
-  hasLoginValidationErrors,
-  LoginValidationErrors,
-} from '@/utils/loginValidations'
+import { loginValidations } from '@/utils'
+import type { LoginValidationErrors } from '@/utils/loginValidations'
 
 interface ILoginFormProps {
   onSubmit: (data: { email: string; password: string }) => Promise<void>
@@ -67,9 +64,9 @@ export function LoginForm({
     e.preventDefault()
 
     // Validar formulário completo
-    const newErrors = validateLoginForm(formData)
+    const newErrors = loginValidations.validateLoginForm(formData)
 
-    if (hasLoginValidationErrors(newErrors)) {
+    if (loginValidations.hasLoginValidationErrors(newErrors)) {
       setErrors(newErrors)
       // Marcar todos os campos como tocados para mostrar erros
       setTouched({
@@ -89,7 +86,7 @@ export function LoginForm({
     }
   }
 
-  const isFormValid = !hasLoginValidationErrors(errors)
+  const isFormValid = !loginValidations.hasLoginValidationErrors(errors)
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">

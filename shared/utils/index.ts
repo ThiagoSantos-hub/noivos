@@ -3,4 +3,4 @@
  */
 
 export * from './validations'
-export * from './loginValidations'
+export * as loginValidations from './loginValidations'

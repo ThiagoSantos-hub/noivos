@@ -3,9 +3,9 @@ import Image from 'next/image'
 
 export default function Home() {
   return (
-    <main className="min-h-screen flex flex-col items-center justify-center px-4" style={{ backgroundColor: '#FFFFFF' }}>
-      <div className="text-center max-w-md">
-        <div className="flex justify-center mb-4">
+    <main className="h-screen flex flex-col items-center justify-center px-4" style={{ backgroundColor: '#FFFFFF' }}>
+      <div className="flex flex-col items-center text-center max-w-md">
+        <div className="flex justify-center mb-1">
           <Image
             src="/images/aliancas.png"
             alt="Alianças de casamento"
@@ -20,7 +20,7 @@ export default function Home() {
           Planejamento de casamento para noivos
         </p>
 
-        <div className="space-y-4">
+        <div className="w-full space-y-4">
           <Link
             href="/cadastro"
             className="block w-full py-3 px-4 rounded-lg font-semibold text-white text-center transition-all"

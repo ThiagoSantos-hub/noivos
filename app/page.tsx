@@ -8,10 +8,28 @@
 
 import Image from 'next/image'
 import Link from 'next/link'
+import { useAuthRedirect } from '@/shared/hooks'
 
 export default function LandingPage() {
+  const { isLoading } = useAuthRedirect('/inicio')
+
+  // Se estiver carregando (e redirecionando), não renderizar nada
+  if (isLoading) {
+    return null
+  }
+
   return (
     <div className="min-h-screen bg-white text-slate-900 selection:bg-green-100 overflow-x-hidden">
+      {/* Header com link de Entrar */}
+      <header className="fixed top-0 right-0 z-50 p-6">
+        <Link
+          href="/login"
+          className="text-sm font-semibold text-blue-900 hover:text-blue-700 transition-colors"
+        >
+          Entrar
+        </Link>
+      </header>
+
       {/* Hero Section - Abertura */}
       <section className="relative h-screen w-full flex flex-col items-center justify-center overflow-hidden">
         <div className="absolute inset-0 z-0">
@@ -41,12 +59,7 @@ export default function LandingPage() {
             >
               Conheça nossa história
             </Link>
-            <Link 
-              href="/login" 
-              className="px-8 py-4 border-2 border-blue-900 text-blue-900 rounded-full font-bold hover:bg-blue-50 transition-all"
-            >
-              Já sou Noivo
-            </Link>
+
           </div>
         </div>
         

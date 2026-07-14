@@ -77,12 +77,11 @@ export function PWAInstallPrompt() {
             Agora não
           </button>
           <Button
+            label="Adicionar à tela"
             onClick={handleInstallClick}
             className="flex-1 py-3 text-sm font-bold rounded-xl shadow-lg shadow-green-100"
             style={{ backgroundColor: '#22C55E' }}
-          >
-            Adicionar à tela
-          </Button>
+          />
         </div>
       </div>
     </div>

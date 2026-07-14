@@ -79,7 +79,7 @@ export default function OnboardingPage() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col" style={{ backgroundColor: '#FFFFFF' }}>
+    <div className="h-screen flex flex-col overflow-y-auto" style={{ backgroundColor: '#FFFFFF' }}>
       {/* Barra de Progresso */}
       <ProgressBar progress={progress} />
 

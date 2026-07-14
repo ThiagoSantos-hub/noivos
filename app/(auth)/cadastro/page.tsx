@@ -83,20 +83,23 @@ export default function OnboardingPage() {
       {/* Barra de Progresso */}
       <ProgressBar progress={progress} />
 
-      {/* Conteúdo Principal */}
-      <div className="flex-1 flex items-center justify-center px-4 py-8 pt-16">
+      {/* Conteúdo Principal - Sem centralização vertical fixa para permitir scroll */}
+      <div className="flex-1 flex flex-col items-center px-6 py-8 pt-16">
         <div className="w-full max-w-md">
           {/* Cabeçalho */}
           <div className="mb-8 text-center flex flex-col items-center">
             <div className="mb-1">
-              <Image
-                src="/images/aliancas.png"
-                alt="Alianças de casamento"
-                width={120}
-                height={120}
-              />
+              <div className="relative w-[80px] h-[80px] md:w-[120px] md:h-[120px]">
+                <Image
+                  src="/images/aliancas.png"
+                  alt="Alianças de casamento"
+                  fill
+                  style={{ objectFit: 'contain' }}
+                  priority
+                />
+              </div>
             </div>
-            <h1 className="text-3xl font-bold mb-2" style={{ color: '#1E293B' }}>
+            <h1 className="text-2xl md:text-3xl font-bold mb-2" style={{ color: '#1E293B' }}>
               Bem-vindo ao Noivos
             </h1>
             <p className="text-base" style={{ color: '#64748B' }}>
@@ -105,14 +108,16 @@ export default function OnboardingPage() {
           </div>
 
           {/* Formulário */}
-          <OnboardingForm
-            onSubmit={handleSubmit}
-            isLoading={isLoading}
-            error={error}
-          />
+          <div className="w-full">
+            <OnboardingForm
+              onSubmit={handleSubmit}
+              isLoading={isLoading}
+              error={error}
+            />
+          </div>
 
           {/* Rodapé */}
-          <div className="mt-8 text-center">
+          <div className="mt-8 text-center pb-8">
             <p className="text-xs" style={{ color: '#64748B' }}>
               Já tem uma conta?{' '}
               <a

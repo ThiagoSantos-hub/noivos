@@ -47,41 +47,43 @@ export default function LoginPage(): React.ReactElement {
   }
 
   return (
-    <div className="min-h-screen flex flex-col" style={{ backgroundColor: '#FFFFFF' }}>
-      {/* Conteúdo Principal */}
-      <div className="flex-1 flex items-center justify-center px-4 py-8">
-        <div className="w-full max-w-md">
-          {/* Cabeçalho */}
-          <div className="mb-8 text-center flex flex-col items-center">
-            <div className="mb-1">
+    <div className="min-h-screen flex flex-col items-center justify-center px-6 py-12" style={{ backgroundColor: '#FFFFFF' }}>
+      <div className="w-full max-w-md">
+        {/* Cabeçalho */}
+        <div className="mb-8 text-center flex flex-col items-center">
+          <div className="mb-1">
+            <div className="relative w-[80px] h-[80px] md:w-[120px] md:h-[120px]">
               <Image
                 src="/images/aliancas.png"
                 alt="Alianças de casamento"
-                width={120}
-                height={120}
+                fill
+                style={{ objectFit: 'contain' }}
+                priority
               />
             </div>
-            <h1 className="text-3xl font-bold mb-2" style={{ color: '#1E293B' }}>
-              Bem-vindo de Volta
-            </h1>
-            <p className="text-base" style={{ color: '#64748B' }}>
-              Faça login para continuar planejando seu casamento
-            </p>
           </div>
+          <h1 className="text-2xl md:text-3xl font-bold mb-2" style={{ color: '#1E293B' }}>
+            Bem-vindo de Volta
+          </h1>
+          <p className="text-base" style={{ color: '#64748B' }}>
+            Faça login para continuar planejando seu casamento
+          </p>
+        </div>
 
-          {/* Formulário */}
+        {/* Formulário */}
+        <div className="w-full">
           <LoginForm
             onSubmit={handleSubmit}
             isLoading={isLoading}
             error={error}
           />
+        </div>
 
-          {/* Rodapé */}
-          <div className="mt-8 text-center">
-            <p className="text-xs" style={{ color: '#64748B' }}>
-              Ao fazer login, você concorda com nossos termos de serviço.
-            </p>
-          </div>
+        {/* Rodapé */}
+        <div className="mt-8 text-center">
+          <p className="text-xs" style={{ color: '#64748B' }}>
+            Ao fazer login, você concorda com nossos termos de serviço.
+          </p>
         </div>
       </div>
     </div>

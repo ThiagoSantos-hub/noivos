@@ -3,17 +3,20 @@ import Image from 'next/image'
 
 export default function Home() {
   return (
-    <main className="h-screen flex flex-col items-center justify-center px-4" style={{ backgroundColor: '#FFFFFF' }}>
-      <div className="flex flex-col items-center text-center max-w-md">
+    <main className="min-h-screen flex flex-col items-center justify-center px-6 py-12" style={{ backgroundColor: '#FFFFFF' }}>
+      <div className="flex flex-col items-center text-center w-full max-w-md">
         <div className="flex justify-center mb-1">
-          <Image
-            src="/images/aliancas.png"
-            alt="Alianças de casamento"
-            width={120}
-            height={120}
-          />
+          <div className="relative w-[100px] h-[100px] md:w-[120px] md:h-[120px]">
+            <Image
+              src="/images/aliancas.png"
+              alt="Alianças de casamento"
+              fill
+              style={{ objectFit: 'contain' }}
+              priority
+            />
+          </div>
         </div>
-        <h1 className="text-4xl font-bold mb-4" style={{ color: '#1E293B' }}>
+        <h1 className="text-3xl md:text-4xl font-bold mb-4" style={{ color: '#1E293B' }}>
           Noivos
         </h1>
         <p className="text-lg mb-8" style={{ color: '#64748B' }}>

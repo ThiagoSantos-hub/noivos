@@ -1,0 +1,22 @@
+{
+  "name": "Noivos",
+  "short_name": "Noivos",
+  "description": "Planejamento de casamento para noivos",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#FFFFFF",
+  "theme_color": "#1E3A8A",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "/images/aliancas.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/images/aliancas.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

@@ -9,6 +9,8 @@
 
 ### `POST /auth/register`
 Cria a conta do casal (onboarding inicial).
+
+**Request:**
 ```json
 {
   "nome_noiva": "string",
@@ -16,10 +18,29 @@ Cria a conta do casal (onboarding inicial).
   "email_noiva": "string",
   "email_noivo": "string",
   "data_casamento": "YYYY-MM-DD",
-  "orcamento_total": 0
+  "orcamento_total": number
 }
 ```
-**Resposta:** `201 Created` + tokens de acesso para ambos os emails.
+
+**Validações (frontend + backend):**
+- `nome_noiva` e `nome_noivo`: obrigatórios, não-vazios
+- `email_noiva` e `email_noivo`: obrigatórios, formato válido, distintos
+- `data_casamento`: obrigatória, deve ser uma data futura
+- `orcamento_total`: obrigatório, numérico, maior que zero
+
+**Resposta:** `201 Created`
+```json
+{
+  "success": true,
+  "access_token": "string",
+  "refresh_token": "string"
+}
+```
+
+**Erros possíveis:**
+- `400 Bad Request`: Validação falhou (email inválido, emails iguais, data no passado, orçamento inválido)
+- `409 Conflict`: Email já cadastrado
+- `500 Internal Server Error`: Erro ao criar conta
 
 ### `POST /auth/login`
 ```json
@@ -34,6 +55,13 @@ Renova o token de acesso.
 Invalida a sessão do dispositivo atual.
 
 > ⚠️ Regra de negócio: máximo 2 dispositivos ativos por conta (1 por noivo). Login em um 3º dispositivo deve ser bloqueado ou exigir remoção de um dispositivo existente.
+
+**Implementação (frontend):**
+- Componente `OnboardingForm` em `shared/components/features/OnboardingForm.tsx`
+- Validações em `shared/utils/validations.ts`
+- Página em `app/(auth)/cadastro/page.tsx`
+- Barra de progresso durante submissão
+- Redirecionamento para `/inicio` após sucesso
 
 ---
 

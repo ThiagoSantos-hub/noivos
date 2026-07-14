@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from 'next'
 import './globals.css'
+import { PWAInstallPrompt } from '@/components/ui/PWAInstallPrompt'
 
 export const metadata: Metadata = {
   title: 'Noivos - Planejamento de Casamento',
@@ -34,7 +35,10 @@ export default function RootLayout({
         <meta name="apple-mobile-web-app-title" content="Noivos" />
         <link rel="apple-touch-icon" href="/images/aliancas.png" />
       </head>
-      <body>{children}</body>
+      <body>
+        {children}
+        <PWAInstallPrompt />
+      </body>
     </html>
   )
 }

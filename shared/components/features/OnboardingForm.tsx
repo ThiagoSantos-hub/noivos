@@ -22,6 +22,7 @@ interface OnboardingFormProps {
     email_noivo: string
     data_casamento: string
     orcamento_total: number
+    password?: string
   }) => Promise<void>
   isLoading?: boolean
   error?: string
@@ -39,6 +40,8 @@ export function OnboardingForm({
     email_noivo: '',
     data_casamento: '',
     orcamento_total: '',
+    password: '',
+    confirm_password: '',
   })
 
   const [errors, setErrors] = useState<ValidationErrors>({})
@@ -91,6 +94,8 @@ export function OnboardingForm({
         email_noivo: true,
         data_casamento: true,
         orcamento_total: true,
+        password: true,
+        confirm_password: true,
       })
       return
     }
@@ -104,6 +109,7 @@ export function OnboardingForm({
         email_noivo: formData.email_noivo,
         data_casamento: formData.data_casamento,
         orcamento_total: parseFloat(formData.orcamento_total),
+        password: formData.password,
       })
       setSuccessMessage('Cadastro realizado com sucesso!')
     } catch (err) {
@@ -231,6 +237,37 @@ export function OnboardingForm({
           disabled={isLoading}
           step="0.01"
           min="0"
+        />
+      </div>
+
+      {/* Seção: Senha do Casal */}
+      <div className="space-y-4">
+        <h3 className="text-lg font-semibold" style={{ color: '#1E293B' }}>
+          🔐 Segurança do Casal
+        </h3>
+
+        <Input
+          label="Senha do Casal"
+          name="password"
+          type="password"
+          placeholder="Crie uma senha para o casal"
+          value={formData.password}
+          onChange={handleChange}
+          onBlur={handleBlur}
+          error={touched.password ? errors.password : undefined}
+          disabled={isLoading}
+        />
+
+        <Input
+          label="Confirmar Senha"
+          name="confirm_password"
+          type="password"
+          placeholder="Repita a senha"
+          value={formData.confirm_password}
+          onChange={handleChange}
+          onBlur={handleBlur}
+          error={touched.confirm_password ? errors.confirm_password : undefined}
+          disabled={isLoading}
         />
       </div>
 

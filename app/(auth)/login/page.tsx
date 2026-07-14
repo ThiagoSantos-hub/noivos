@@ -8,6 +8,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import Image from 'next/image'
 import { LoginForm } from '@/components/features/LoginForm'
 
 export default function LoginPage(): React.ReactElement {
@@ -51,9 +52,17 @@ export default function LoginPage(): React.ReactElement {
       <div className="flex-1 flex items-center justify-center px-4 py-8">
         <div className="w-full max-w-md">
           {/* Cabeçalho */}
-          <div className="mb-8 text-center">
+          <div className="mb-8 text-center flex flex-col items-center">
+            <div className="mb-1">
+              <Image
+                src="/images/aliancas.png"
+                alt="Alianças de casamento"
+                width={120}
+                height={120}
+              />
+            </div>
             <h1 className="text-3xl font-bold mb-2" style={{ color: '#1E293B' }}>
-              💍 Bem-vindo de Volta
+              Bem-vindo de Volta
             </h1>
             <p className="text-base" style={{ color: '#64748B' }}>
               Faça login para continuar planejando seu casamento

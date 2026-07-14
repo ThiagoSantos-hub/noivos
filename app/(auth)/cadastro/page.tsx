@@ -25,6 +25,7 @@ export default function OnboardingPage() {
     email_noivo: string
     data_casamento: string
     orcamento_total: number
+    password?: string
   }) => {
     setError('')
     setProgress(20)

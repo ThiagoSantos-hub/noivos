@@ -11,6 +11,8 @@ export interface ValidationErrors {
   data_casamento?: string
   orcamento_total?: string
   emails_match?: string
+  password?: string
+  confirm_password?: string
 }
 
 /**
@@ -56,6 +58,8 @@ export function validateOnboardingForm(data: {
   email_noivo: string
   data_casamento: string
   orcamento_total: string | number
+  password?: string
+  confirm_password?: string
 }): ValidationErrors {
   const errors: ValidationErrors = {}
 
@@ -102,6 +106,24 @@ export function validateOnboardingForm(data: {
     errors.orcamento_total = 'Orçamento total é obrigatório'
   } else if (!isPositiveNumber(data.orcamento_total)) {
     errors.orcamento_total = 'Orçamento deve ser um valor positivo'
+  }
+
+  // Validar senha
+  if (data.password !== undefined) {
+    if (!data.password) {
+      errors.password = 'Senha do casal é obrigatória'
+    } else if (data.password.length < 6) {
+      errors.password = 'A senha deve ter no mínimo 6 caracteres'
+    }
+  }
+
+  // Validar confirmação de senha
+  if (data.confirm_password !== undefined) {
+    if (!data.confirm_password) {
+      errors.confirm_password = 'Confirmação de senha é obrigatória'
+    } else if (data.confirm_password !== data.password) {
+      errors.confirm_password = 'As senhas não conferem'
+    }
   }
 
   return errors

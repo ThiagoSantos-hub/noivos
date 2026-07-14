@@ -3,7 +3,7 @@ import Image from 'next/image'
 
 export default function Home() {
   return (
-    <main className="min-h-screen flex flex-col items-center justify-center px-6 py-12" style={{ backgroundColor: '#FFFFFF' }}>
+    <main className="h-screen w-screen overflow-hidden flex flex-col items-center justify-center px-6 py-12" style={{ backgroundColor: '#FFFFFF' }}>
       <div className="flex flex-col items-center text-center w-full max-w-md">
         <div className="flex justify-center">
           <div className="relative w-[100px] h-[100px] md:w-[120px] md:h-[120px]">

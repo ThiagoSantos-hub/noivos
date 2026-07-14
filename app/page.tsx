@@ -101,7 +101,7 @@ export default function LandingPage() {
             <span className="text-green-600 font-bold tracking-widest uppercase text-sm">O Sonho</span>
             <h3 className="text-3xl font-bold text-blue-900 mt-2 mb-4">Planejando o Sim</h3>
             <p className="text-lg text-slate-600 leading-relaxed">
-              Um mês de namoro e o coração já falava em casamento. Aos três meses, o bufê já estava alugado. O planejamento intenso nasceu da vontade de celebrar o amor com cada detalhe perfeito. E assim nasceu o **Noivos**, para ajudar outros casais a viverem essa mesma organização.
+              Um mês de namoro e o coração já falava em casamento. Aos três meses, o bufê já estava alugado. O planejamento intenso nasceu da vontade de celebrar o amor com cada detalhe perfeito. E assim nasceu o <span className="font-bold text-blue-900">Noivos</span>, para ajudar outros casais a viverem essa mesma organização.
             </p>
           </div>
         </div>

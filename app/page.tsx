@@ -121,17 +121,17 @@ export default function LandingPage() {
       </section>
 
       {/* Chamada para Ação Final */}
-      <section className="bg-slate-50 py-24 px-6 text-center">
+      <section className="bg-slate-50 py-12 px-6 text-center">
         <div className="max-w-3xl mx-auto">
-          <h2 className="text-4xl font-serif font-bold text-blue-900 mb-6">1º de Maio de 2027</h2>
-          <p className="text-xl text-slate-600 mb-10">
+          <h2 className="text-4xl font-serif font-bold text-blue-900 mb-3">1º de Maio de 2027</h2>
+          <p className="text-xl text-slate-600 mb-6">
             Nossa jornada rumo ao altar continua, e queremos que a sua seja tão organizada e especial quanto a nossa.
           </p>
           
-          <div className="bg-white p-8 rounded-3xl shadow-xl border border-slate-100 mb-10">
+          <div className="bg-white p-6 rounded-3xl shadow-xl border border-slate-100 mb-4">
             <h4 className="text-2xl font-bold text-slate-800 mb-2">Plano Noivos Pro</h4>
             <p className="text-slate-500 mb-6">Tudo o que você precisa na palma da mão</p>
-            <div className="mb-6">
+            <div className="mb-4">
               <div className="flex items-center justify-center gap-3 mb-2">
                 <span className="text-2xl text-slate-400 line-through">R$ 47,90</span>
                 <span className="bg-red-500 text-white px-3 py-1 rounded-full text-sm font-bold">-79%</span>
@@ -140,7 +140,7 @@ export default function LandingPage() {
                 R$ 9,90<span className="text-lg text-slate-400 font-normal">/mês</span>
               </div>
             </div>
-            <ul className="text-left text-slate-600 space-y-3 mb-8">
+            <ul className="text-left text-slate-600 space-y-3 mb-5">
               <li className="flex items-center gap-2">
                 <svg className="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20"><path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"/></svg>
                 Controle financeiro e buffet

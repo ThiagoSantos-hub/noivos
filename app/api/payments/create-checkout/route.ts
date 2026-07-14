@@ -13,7 +13,7 @@ const PLAN_PRICE = 9.90
 export async function POST(request: Request) {
   try {
     const body = await request.json()
-    const { nome_noiva, nome_noivo, email_noiva, email_noivo } = body
+    const { nome_noiva, nome_noivo, email_noiva } = body
 
     // 1. Criar ou localizar o cliente no Asaas
     const customerResponse = await fetch(`${ASAAS_API_URL}/customers`, {

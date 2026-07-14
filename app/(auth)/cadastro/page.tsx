@@ -7,13 +7,11 @@
 'use client'
 
 import { useState } from 'react'
-import { useRouter } from 'next/navigation'
 import Image from 'next/image'
 import { ProgressBar } from '@/components/ui/ProgressBar'
 import { OnboardingForm } from '@/components/features/OnboardingForm'
 
 export default function OnboardingPage() {
-  const router = useRouter()
   const [progress, setProgress] = useState(0)
   const [error, setError] = useState<string>('')
   const [isLoading, setIsLoading] = useState(false)

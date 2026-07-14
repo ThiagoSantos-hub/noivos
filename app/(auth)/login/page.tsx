@@ -47,7 +47,7 @@ export default function LoginPage(): React.ReactElement {
   }
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center px-6 py-12" style={{ backgroundColor: '#FFFFFF' }}>
+    <div className="h-screen w-screen overflow-hidden flex flex-col items-center justify-center px-6 py-12" style={{ backgroundColor: '#FFFFFF' }}>
       <div className="w-full max-w-md">
         {/* Cabeçalho */}
         <div className="mb-8 text-center flex flex-col items-center">

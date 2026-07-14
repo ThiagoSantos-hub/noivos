@@ -32,6 +32,7 @@ export default function OnboardingPage() {
     try {
       // TODO: Chamar endpoint POST /auth/register
       // Por enquanto, simular sucesso
+      console.log('Dados do formulário:', data)
       setProgress(50)
 
       // Simular delay de API

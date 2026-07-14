@@ -129,3 +129,13 @@ VERCEL_ENV=development | preview | production
 ---
 
 *Última atualização: gerado a partir da página "APP DE CASAMENTO — VISÃO COMPLETA" no Notion + integração ativa com Supabase e Vercel.*
+
+---
+
+## 11. E-mail Transacional — Brevo
+
+```env
+BREVO_API_KEY=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
+BREVO_SENDER_NAME=Noivos
+BREVO_SENDER_EMAIL=digitalalpha24@gmail.com
+```

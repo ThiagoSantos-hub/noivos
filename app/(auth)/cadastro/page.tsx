@@ -32,13 +32,33 @@ export default function OnboardingPage() {
     setIsLoading(true)
 
     try {
+      // 1. Criar conta no Supabase (Simulado)
       // TODO: Chamar endpoint POST /auth/register
-      // Por enquanto, simular sucesso
-      console.log('Dados do formulário:', data)
+      console.log('Criando conta no Supabase:', data)
       setProgress(50)
 
-      // Simular delay de API
+      // Simular delay de API do Supabase
       await new Promise((resolve) => setTimeout(resolve, 1000))
+      setProgress(80)
+
+      // 2. Disparar e-mails de boas-vindas via Brevo
+      // Não bloqueia o fluxo principal em caso de erro no e-mail
+      try {
+        fetch('/api/send-welcome-email', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data),
+        }).then(response => {
+          if (!response.ok) {
+            console.error('Falha ao disparar e-mails de boas-vindas via API')
+          }
+        }).catch(err => {
+          console.error('Erro na chamada da API de e-mail:', err)
+        })
+      } catch (emailErr) {
+        // Apenas loga o erro, sem interromper o cadastro
+        console.error('Erro ao tentar disparar e-mails:', emailErr)
+      }
 
       setProgress(100)
 

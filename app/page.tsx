@@ -101,7 +101,7 @@ export default function LandingPage() {
             <span className="text-green-600 font-bold tracking-widest uppercase text-sm">O Sonho</span>
             <h3 className="text-3xl font-bold text-blue-900 mt-2 mb-4">Planejando o Sim</h3>
             <p className="text-lg text-slate-600 leading-relaxed">
-              Um mês de namoro e o coração já falava em casamento. Aos três meses, o bufê já estava alugado. O planejamento intenso nasceu da vontade de celebrar o amor com cada detalhe perfeito. E assim nasceu o <span className="font-bold text-blue-900">Noivos</span>, para ajudar outros casais a viverem essa mesma organização.
+              Um mês de namoro e o coração já falava em casamento. Aos três meses, o buffet já estava alugado. O planejamento intenso nasceu da vontade de celebrar o amor com cada detalhe perfeito. E assim nasceu o <span className="font-bold text-blue-900">Noivos</span>, para ajudar outros casais a viverem essa mesma organização.
             </p>
           </div>
         </div>
@@ -122,7 +122,7 @@ export default function LandingPage() {
             <ul className="text-left text-slate-600 space-y-3 mb-8">
               <li className="flex items-center gap-2">
                 <svg className="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20"><path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"/></svg>
-                Controle financeiro e bufê
+                Controle financeiro e buffet
               </li>
               <li className="flex items-center gap-2">
                 <svg className="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20"><path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"/></svg>

@@ -51,7 +51,7 @@ export default function LoginPage(): React.ReactElement {
       <div className="w-full max-w-md">
         {/* Cabeçalho */}
         <div className="mb-8 text-center flex flex-col items-center">
-          <div className="mb-1">
+          <div className="mb-0">
             <div className="relative w-[80px] h-[80px] md:w-[120px] md:h-[120px]">
               <Image
                 src="/images/aliancas.png"
@@ -62,7 +62,7 @@ export default function LoginPage(): React.ReactElement {
               />
             </div>
           </div>
-          <h1 className="text-2xl md:text-3xl font-bold mb-2" style={{ color: '#1E293B' }}>
+          <h1 className="text-2xl md:text-3xl font-bold mb-2 -mt-2" style={{ color: '#1E293B' }}>
             Bem-vindo de Volta
           </h1>
           <p className="text-base" style={{ color: '#64748B' }}>

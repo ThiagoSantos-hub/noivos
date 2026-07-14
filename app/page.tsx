@@ -5,7 +5,7 @@ export default function Home() {
   return (
     <main className="min-h-screen flex flex-col items-center justify-center px-6 py-12" style={{ backgroundColor: '#FFFFFF' }}>
       <div className="flex flex-col items-center text-center w-full max-w-md">
-        <div className="flex justify-center mb-1">
+        <div className="flex justify-center">
           <div className="relative w-[100px] h-[100px] md:w-[120px] md:h-[120px]">
             <Image
               src="/images/aliancas.png"
@@ -16,7 +16,7 @@ export default function Home() {
             />
           </div>
         </div>
-        <h1 className="text-3xl md:text-4xl font-bold mb-4" style={{ color: '#1E293B' }}>
+        <h1 className="text-3xl md:text-4xl font-bold mb-4 -mt-2" style={{ color: '#1E293B' }}>
           Noivos
         </h1>
         <p className="text-lg mb-8" style={{ color: '#64748B' }}>

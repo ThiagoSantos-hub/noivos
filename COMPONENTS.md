@@ -133,6 +133,39 @@ São componentes que contêm lógica do projeto (mas não fazem chamadas diretas
 
 ---
 
+### `LoginForm`
+**Objetivo:** Formulário de login do casal com validações de email e senha.
+
+**Quando utilizar:** Na tela de login (`/login`).
+
+**Props disponíveis:**
+| Prop | Tipo | Descrição |
+|------|------|----------|
+| `onSubmit` | `(data: { email: string; password: string }) => Promise<void>` | Callback ao submeter |
+| `isLoading` | `boolean` | Estado de carregamento |
+| `error` | `string` | Mensagem de erro externa |
+
+**Campos do formulário:**
+- Email (obrigatório, válido)
+- Senha (obrigatória, mínimo 6 caracteres)
+
+**Validações:**
+- Email é obrigatório e deve ter formato válido
+- Senha é obrigatória e deve ter no mínimo 6 caracteres
+- Feedback visual em tempo real
+- Link "Não tem conta? Cadastre-se aqui" apontando para `/cadastro`
+
+**Exemplo de uso:**
+```tsx
+<LoginForm
+  onSubmit={handleLogin}
+  isLoading={isLoading}
+  error={error}
+/>
+```
+
+---
+
 ## 📐 Padrões de Nomenclatura
 
 | Tipo | Padrão | Exemplo |

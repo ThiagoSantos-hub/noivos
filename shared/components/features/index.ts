@@ -3,3 +3,4 @@
  */
 
 export { OnboardingForm } from './OnboardingForm'
+export { LoginForm } from './LoginForm'

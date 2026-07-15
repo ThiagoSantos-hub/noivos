@@ -1,62 +1,151 @@
+import { createClient, PostgrestError } from '@supabase/supabase-js'
 import { NextResponse } from 'next/server'
-import { createClient } from '@supabase/supabase-js'
+
+interface RegisterRequestBody {
+  nome_noiva?: string
+  nome_noivo?: string
+  email_noiva?: string
+  email_noivo?: string
+  data_casamento?: string
+  orcamento_total?: number
+  noiva_user_id?: string
+  noivo_user_id?: string
+}
+
+interface CoupleInsertPayload {
+  nome_noiva: string
+  nome_noivo: string
+  email_noiva: string
+  email_noivo: string
+  data_casamento: string
+  total_budget: number
+  noiva_user_id: string
+  noivo_user_id: string
+  bride_name: string
+  groom_name: string
+}
+
+const REQUIRED_FIELDS: Array<keyof RegisterRequestBody> = [
+  'nome_noiva',
+  'nome_noivo',
+  'email_noiva',
+  'email_noivo',
+  'data_casamento',
+  'noiva_user_id',
+  'noivo_user_id',
+]
+
+function getMissingFields(body: RegisterRequestBody): string[] {
+  return REQUIRED_FIELDS.filter(field => !body[field])
+}
+
+function logInsertError(error: PostgrestError, payload: CoupleInsertPayload): void {
+  const databaseErrorText = [error.message, error.details, error.hint]
+    .filter(Boolean)
+    .join(' ')
+  const suspectedFields = Object.keys(payload).filter(field =>
+    databaseErrorText.includes(field)
+  )
+
+  console.error('Erro ao inserir casal na tabela couples', {
+    code: error.code,
+    message: error.message,
+    details: error.details,
+    hint: error.hint,
+    suspectedFields,
+    payloadFields: Object.keys(payload),
+    fieldTypes: Object.fromEntries(
+      Object.entries(payload).map(([field, value]) => [field, typeof value])
+    ),
+    userIdsPresent: {
+      noiva_user_id: Boolean(payload.noiva_user_id),
+      noivo_user_id: Boolean(payload.noivo_user_id),
+    },
+  })
+}
 
 /**
  * Rota API para registro seguro de casal
  * POST /api/auth/register
- * 
+ *
  * Usa SERVICE_ROLE_KEY para contornar RLS na inserção da tabela couples
  * pois o usuário ainda não está autenticado no momento do cadastro
  */
-
-export async function POST(request: Request) {
+export async function POST(request: Request): Promise<NextResponse> {
   try {
-    const body = await request.json()
-    const {
-      nome_noiva,
-      nome_noivo,
-      email_noiva,
-      email_noivo,
-      data_casamento,
-      orcamento_total,
-      noiva_user_id,
-    } = body
+    const body = await request.json() as RegisterRequestBody
+    const missingFields = getMissingFields(body)
 
-    // Validar dados obrigatórios
-    if (!nome_noiva || !nome_noivo || !email_noiva || !email_noivo || !data_casamento || !noiva_user_id) {
+    if (missingFields.length > 0) {
+      console.error('Dados incompletos recebidos na rota de registro', {
+        missingFields,
+        receivedFields: Object.keys(body),
+        noivaUserIdPresent: Boolean(body.noiva_user_id),
+        noivoUserIdPresent: Boolean(body.noivo_user_id),
+      })
+
       return NextResponse.json(
-        { error: 'Dados incompletos para o registro' },
+        {
+          error: 'Dados incompletos para o registro',
+          missingFields,
+        },
         { status: 400 }
       )
     }
 
-    // Criar cliente Supabase com SERVICE_ROLE_KEY para contornar RLS
-    const supabaseAdmin = createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.SUPABASE_SERVICE_ROLE_KEY!
-    )
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL
+    const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY
 
-    // Inserir dados na tabela couples usando o cliente admin
+    if (!supabaseUrl || !serviceRoleKey) {
+      const missingEnvironmentVariables = [
+        !supabaseUrl ? 'NEXT_PUBLIC_SUPABASE_URL ou SUPABASE_URL' : null,
+        !serviceRoleKey ? 'SUPABASE_SERVICE_ROLE_KEY' : null,
+      ].filter((variable): variable is string => Boolean(variable))
+
+      console.error('Configuração incompleta do Supabase na rota de registro', {
+        missingEnvironmentVariables,
+      })
+
+      return NextResponse.json(
+        { error: 'Configuração do servidor incompleta para concluir o registro' },
+        { status: 500 }
+      )
+    }
+
+    const payload: CoupleInsertPayload = {
+      nome_noiva: body.nome_noiva as string,
+      nome_noivo: body.nome_noivo as string,
+      email_noiva: body.email_noiva as string,
+      email_noivo: body.email_noivo as string,
+      data_casamento: body.data_casamento as string,
+      total_budget: body.orcamento_total ?? 0,
+      noiva_user_id: body.noiva_user_id as string,
+      noivo_user_id: body.noivo_user_id as string,
+      bride_name: body.nome_noiva as string,
+      groom_name: body.nome_noivo as string,
+    }
+
+    const supabaseAdmin = createClient(supabaseUrl, serviceRoleKey, {
+      auth: {
+        autoRefreshToken: false,
+        persistSession: false,
+      },
+    })
+
     const { data, error } = await supabaseAdmin
       .from('couples')
-      .insert({
-        nome_noiva,
-        nome_noivo,
-        email_noiva,
-        email_noivo,
-        data_casamento,
-        total_budget: orcamento_total || 0,
-        noiva_user_id,
-        bride_name: nome_noiva,
-        groom_name: nome_noivo,
-      })
+      .insert(payload)
       .select()
       .single()
 
     if (error) {
-      console.error('Erro ao inserir couple:', error)
+      logInsertError(error, payload)
+
       return NextResponse.json(
-        { error: `Erro ao salvar dados do casal: ${error.message}` },
+        {
+          error: `Erro ao salvar dados do casal: ${error.message}`,
+          errorCode: error.code,
+        },
         { status: 500 }
       )
     }
@@ -66,7 +155,11 @@ export async function POST(request: Request) {
       { status: 201 }
     )
   } catch (error) {
-    console.error('Erro na rota de registro:', error)
+    console.error('Erro inesperado na rota de registro', {
+      message: error instanceof Error ? error.message : 'Erro desconhecido',
+      stack: error instanceof Error ? error.stack : undefined,
+    })
+
     return NextResponse.json(
       { error: 'Erro ao processar registro' },
       { status: 500 }

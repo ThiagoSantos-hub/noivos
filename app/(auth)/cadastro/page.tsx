@@ -10,6 +10,7 @@ import { useState } from 'react'
 import Image from 'next/image'
 import { ProgressBar } from '@/components/ui/ProgressBar'
 import { OnboardingForm } from '@/components/features/OnboardingForm'
+import { supabase } from '@/services/supabase'
 
 export default function OnboardingPage() {
   const [progress, setProgress] = useState(0)
@@ -30,16 +31,35 @@ export default function OnboardingPage() {
     setIsLoading(true)
 
     try {
-      // 1. Criar conta no Supabase (Simulado)
-      // TODO: Chamar endpoint POST /auth/register
-      console.log('Criando conta no Supabase:', data)
-      setProgress(50)
+      // 1. Criar conta no Supabase Auth
+      const { data: authData, error: authError } = await supabase.auth.signUp({
+        email: data.email_noiva,
+        password: data.password || '',
+      })
 
-      // Simular delay de API do Supabase
-      await new Promise((resolve) => setTimeout(resolve, 1000))
-      setProgress(80)
+      if (authError) throw new Error(authError.message)
+      if (!authData.user) throw new Error('Falha ao criar usuário')
 
-      // 2. Disparar e-mails de boas-vindas via Brevo
+      setProgress(40)
+
+      // 2. Inserir dados na tabela `couples`
+      const { error: dbError } = await supabase.from('couples').insert({
+        nome_noiva: data.nome_noiva,
+        nome_noivo: data.nome_noivo,
+        email_noiva: data.email_noiva,
+        email_noivo: data.email_noivo,
+        wedding_date: data.data_casamento,
+        total_budget: data.orcamento_total,
+        noiva_user_id: authData.user.id,
+        bride_name: data.nome_noiva,
+        groom_name: data.nome_noivo,
+      })
+
+      if (dbError) throw new Error(dbError.message)
+
+      setProgress(70)
+
+      // 3. Disparar e-mails de boas-vindas via Brevo
       // Não bloqueia o fluxo principal em caso de erro no e-mail
       try {
         fetch('/api/send-welcome-email', {

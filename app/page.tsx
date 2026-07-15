@@ -140,6 +140,7 @@ export default function LandingPage() {
               <div className="text-5xl font-bold text-green-600">
                 R$ 9,90<span className="text-lg text-slate-400 font-normal">/mês</span>
               </div>
+              <p className="text-sm text-slate-400 mt-2 italic">Pode cancelar a qualquer momento</p>
             </div>
             <ul className="text-left text-slate-600 space-y-3 mb-5">
               <li className="flex items-center gap-2">

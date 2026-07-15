@@ -32,18 +32,29 @@ export default function OnboardingPage() {
     setIsLoading(true)
 
     try {
-      // 1. Criar conta no Supabase Auth
-      const { data: authData, error: authError } = await supabase.auth.signUp({
+      // 1. Criar conta da noiva no Supabase Auth
+      const { data: authDataNoiva, error: authErrorNoiva } = await supabase.auth.signUp({
         email: data.email_noiva,
         password: data.password || '',
       })
 
-      if (authError) throw new Error(authError.message)
-      if (!authData.user) throw new Error('Falha ao criar usuário')
+      if (authErrorNoiva) throw new Error(`Erro ao criar conta da noiva: ${authErrorNoiva.message}`)
+      if (!authDataNoiva.user) throw new Error('Falha ao criar usuário (noiva)')
+
+      setProgress(30)
+
+      // 2. Criar conta do noivo no Supabase Auth
+      const { data: authDataNoivo, error: authErrorNoivo } = await supabase.auth.signUp({
+        email: data.email_noivo,
+        password: data.password || '',
+      })
+
+      if (authErrorNoivo) throw new Error(`Erro ao criar conta do noivo: ${authErrorNoivo.message}`)
+      if (!authDataNoivo.user) throw new Error('Falha ao criar usuário (noivo)')
 
       setProgress(40)
 
-      // 2. Inserir dados na tabela `couples` via API (usando SERVICE_ROLE_KEY no servidor)
+      // 3. Inserir dados na tabela `couples` via API (usando SERVICE_ROLE_KEY no servidor)
       const registerResponse = await fetch('/api/auth/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -54,7 +65,8 @@ export default function OnboardingPage() {
           email_noivo: data.email_noivo,
           data_casamento: data.data_casamento,
           orcamento_total: data.orcamento_total,
-          noiva_user_id: authData.user.id,
+          noiva_user_id: authDataNoiva.user.id,
+          noivo_user_id: authDataNoivo.user.id,
         }),
       })
 
@@ -66,7 +78,7 @@ export default function OnboardingPage() {
 
       setProgress(70)
 
-      // 3. Disparar e-mails de boas-vindas via Brevo
+      // 4. Disparar e-mails de boas-vindas via Brevo
       // Não bloqueia o fluxo principal em caso de erro no e-mail
       try {
         fetch('/api/send-welcome-email', {

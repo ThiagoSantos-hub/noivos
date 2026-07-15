@@ -20,10 +20,11 @@ export async function POST(request: Request) {
       data_casamento,
       orcamento_total,
       noiva_user_id,
+      noivo_user_id,
     } = body
 
     // Validar dados obrigatórios
-    if (!nome_noiva || !nome_noivo || !email_noiva || !email_noivo || !data_casamento || !noiva_user_id) {
+    if (!nome_noiva || !nome_noivo || !email_noiva || !email_noivo || !data_casamento || !noiva_user_id || !noivo_user_id) {
       return NextResponse.json(
         { error: 'Dados incompletos para o registro' },
         { status: 400 }
@@ -47,6 +48,7 @@ export async function POST(request: Request) {
         data_casamento,
         total_budget: orcamento_total || 0,
         noiva_user_id,
+        noivo_user_id,
         bride_name: nome_noiva,
         groom_name: nome_noivo,
       })

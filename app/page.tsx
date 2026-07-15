@@ -49,9 +49,10 @@ export default function LandingPage() {
             </div>
           </div>
           <h1 className="text-5xl md:text-7xl font-serif font-bold text-blue-900 mb-4">Noivos</h1>
-          <p className="text-xl md:text-2xl font-light text-slate-600 mb-8 italic">
-            "O amor nunca falha." — 1 Coríntios 13:8
-          </p>
+          <div className="text-xl md:text-2xl font-light text-slate-600 mb-8 italic">
+            <p>"O amor nunca falha."</p>
+            <p className="text-sm md:text-base mt-2 not-italic font-medium text-slate-400">1 Coríntios 13:8</p>
+          </div>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link 
               href="#historia" 

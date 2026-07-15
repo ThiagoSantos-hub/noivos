@@ -347,7 +347,69 @@ São componentes que contêm lógica do projeto (mas não fazem chamadas diretas
 
 ---
 
-## ➕ Como Adicionar um Novo Componente
+### `TaskCard`
+**Objetivo:** Exibe uma tarefa com checkbox de conclusão, badge de prioridade colorido, data limite e responsável.
+
+**Quando utilizar:** Nas listas por categoria da página `/tarefas`.
+
+**Props disponíveis:**
+| Prop | Tipo | Descrição |
+|------|------|-----------|
+| `task` | `Task` | Dados da tarefa |
+| `onClick` | `(task: Task) => void` | Callback ao clicar no card (abre edição) |
+| `onToggle` | `(task: Task) => void` | Callback ao clicar no checkbox (alterna status) |
+
+**Comportamento visual:**
+- Tarefas concluídas: texto riscado, opacidade reduzida
+- Badge de prioridade: Alta = vermelho, Média = amarelo, Baixa = verde
+- Exibe data limite com ícone de calendário e responsável com ícone de usuário
+
+**Exemplo de uso:**
+```tsx
+<TaskCard
+  task={task}
+  onClick={handleTaskClick}
+  onToggle={handleToggle}
+/>
+```
+
+---
+
+### `TaskForm`
+**Objetivo:** Formulário modal para criar ou editar uma tarefa, com todos os campos editáveis.
+
+**Quando utilizar:** Ao clicar no botão (+) ou em um card de tarefa na página `/tarefas`.
+
+**Props disponíveis:**
+| Prop | Tipo | Descrição |
+|------|------|-----------|
+| `task` | `Task?` | Tarefa para edição (opcional) |
+| `onSubmit` | `(data: TaskCreatePayload) => Promise<void>` | Callback ao salvar |
+| `onDelete` | `(id: string) => Promise<void>` | Callback ao excluir (opcional) |
+| `onClose` | `() => void` | Fecha o modal |
+
+**Campos do formulário:**
+- Título (obrigatório)
+- Categoria: Ceriônia / Festa (obrigatório)
+- Status: Pendente / Concluída (obrigatório)
+- Prioridade: Alta / Média / Baixa (opcional, toggle)
+- Responsável: Noiva / Noivo (opcional, toggle)
+- Data limite (opcional)
+- Observações (opcional)
+
+**Exemplo de uso:**
+```tsx
+<TaskForm
+  task={selectedTask}
+  onSubmit={handleSubmit}
+  onDelete={selectedTask ? handleDelete : undefined}
+  onClose={() => setIsFormOpen(false)}
+/>
+```
+
+---
+
+## ➡️ Como Adicionar um Novo Componente
 
 1. Verificar neste arquivo se já existe algo similar
 2. Criar a pasta do componente em `shared/components/ui/` ou `features/`

@@ -211,7 +211,49 @@ Lista convites (celebrante, pais, padrinhos/madrinhas).
 
 ---
 
-## 9. Checklist por Mês
+## 9. Tarefas do Casamento
+
+> Implementação via Supabase direto (sem API Route própria).
+> Service: `shared/services/taskService.ts` | Hook: `shared/hooks/useTasks.ts`
+
+### `GET tasks` (Supabase)
+Busca todas as tarefas do casal autenticado, excluindo soft deletes.
+
+**Filtros aplicados:** `deleted_at IS NULL`, ordenado por `created_at DESC`
+
+**Campos retornados:** `id`, `couple_id`, `title`, `status`, `category`, `priority`, `assignee`, `due_date`, `notes`, `deleted_at`, `created_at`, `updated_at`
+
+### `INSERT tasks` (Supabase)
+```json
+{
+  "title": "string (obrigatório)",
+  "status": "pending | done",
+  "category": "ceremony | party",
+  "priority": "high | medium | low | null",
+  "assignee": "bride | groom | null",
+  "due_date": "YYYY-MM-DD | null",
+  "notes": "string | null",
+  "couple_id": "uuid (preenchido automaticamente pelo service)"
+}
+```
+
+### `UPDATE tasks` (Supabase)
+Atualiza qualquer campo da tarefa. Sempre atualiza `updated_at` automaticamente.
+
+### `UPDATE tasks (soft delete)` (Supabase)
+Preenche `deleted_at` com timestamp atual — nunca deleta fisicamente.
+
+**Realtime:** Subscription ativa na tabela `tasks` via `supabase.channel('tasks-changes')` — sincroniza automaticamente entre os dois dispositivos do casal.
+
+**Componentes relacionados:**
+- Página: `app/(dashboard)/tarefas/page.tsx`
+- Card: `shared/components/features/TaskCard/TaskCard.tsx`
+- Formulário: `shared/components/features/TaskForm/TaskForm.tsx`
+- Tipos: `shared/types/task.types.ts`
+
+---
+
+## 10. Checklist por Mês
 
 ### `GET /checklist`
 Retorna todas as tarefas, agrupadas por período (12, 9, 6, 3, 1 mês, 1 semana antes).

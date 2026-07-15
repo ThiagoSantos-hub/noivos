@@ -262,6 +262,52 @@ São componentes que contêm lógica do projeto (mas não fazem chamadas diretas
 
 ---
 
+### `VendorCard`
+**Objetivo:** Exibe informações de um fornecedor (nome, categoria, valores e barra de progresso).
+
+**Quando utilizar:** Na lista de fornecedores do dashboard.
+
+**Props disponíveis:**
+| Prop | Tipo | Descrição |
+|------|------|-----------|
+| `vendor` | `Vendor` | Objeto com os dados do fornecedor |
+| `onClick` | `(vendor: Vendor) => void` | Callback ao clicar no card para editar |
+
+**Exemplo de uso:**
+```tsx
+<VendorCard vendor={vendor} onClick={handleEdit} />
+```
+
+---
+
+### `VendorForm`
+**Objetivo:** Formulário modal para criação e edição de fornecedores.
+
+**Quando utilizar:** Quando o usuário clica em adicionar (+) ou em um card de fornecedor.
+
+**Props disponíveis:**
+| Prop | Tipo | Descrição |
+|------|------|-----------|
+| `vendor` | `Vendor?` | Objeto para edição (opcional) |
+| `onSubmit` | `(data) => Promise<void>` | Callback ao salvar |
+| `onDelete` | `(id) => Promise<void>` | Callback ao excluir (opcional) |
+| `onClose` | `() => void` | Fecha o modal |
+
+---
+
+### `VendorList`
+**Objetivo:** Gerencia a exibição da lista de fornecedores ou estado vazio.
+
+**Quando utilizar:** Na página `/fornecedores`.
+
+**Props disponíveis:**
+| Prop | Tipo | Descrição |
+|------|------|-----------|
+| `vendors` | `Vendor[]` | Lista de fornecedores |
+| `onVendorClick` | `(vendor) => void` | Callback ao clicar em um item |
+
+---
+
 ## 📐 Padrões de Nomenclatura
 
 | Tipo | Padrão | Exemplo |

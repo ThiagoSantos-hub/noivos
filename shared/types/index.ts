@@ -3,3 +3,4 @@
  */
 
 export * from './couple.types'
+export * from './vendor.types'

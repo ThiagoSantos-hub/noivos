@@ -256,6 +256,7 @@ export function OnboardingForm({
           onBlur={handleBlur}
           error={touched.password ? errors.password : undefined}
           disabled={isLoading}
+          showPasswordToggle
         />
 
         <Input
@@ -268,6 +269,7 @@ export function OnboardingForm({
           onBlur={handleBlur}
           error={touched.confirm_password ? errors.confirm_password : undefined}
           disabled={isLoading}
+          showPasswordToggle
         />
       </div>
 

@@ -43,21 +43,26 @@ export default function OnboardingPage() {
 
       setProgress(40)
 
-      // 2. Inserir dados na tabela `couples`
-      // Nota: a coluna correta no banco é data_casamento
-      const { error: dbError } = await supabase.from('couples').insert({
-        nome_noiva: data.nome_noiva,
-        nome_noivo: data.nome_noivo,
-        email_noiva: data.email_noiva,
-        email_noivo: data.email_noivo,
-        data_casamento: data.data_casamento,
-        total_budget: data.orcamento_total,
-        noiva_user_id: authData.user.id,
-        bride_name: data.nome_noiva,
-        groom_name: data.nome_noivo,
+      // 2. Inserir dados na tabela `couples` via API (usando SERVICE_ROLE_KEY no servidor)
+      const registerResponse = await fetch('/api/auth/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          nome_noiva: data.nome_noiva,
+          nome_noivo: data.nome_noivo,
+          email_noiva: data.email_noiva,
+          email_noivo: data.email_noivo,
+          data_casamento: data.data_casamento,
+          orcamento_total: data.orcamento_total,
+          noiva_user_id: authData.user.id,
+        }),
       })
 
-      if (dbError) throw new Error(dbError.message)
+      const registerData = await registerResponse.json()
+
+      if (!registerResponse.ok) {
+        throw new Error(registerData.error || 'Erro ao salvar dados do casal')
+      }
 
       setProgress(70)
 
@@ -81,15 +86,6 @@ export default function OnboardingPage() {
 
       setProgress(100)
       setIsSuccess(true)
-
-      // 4. Criar checkout no Asaas (opcional, mantido para fluxo futuro)
-      /*
-      const checkoutResponse = await fetch('/api/payments/create-checkout', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data),
-      })
-      */
 
     } catch (err) {
       setProgress(0)
@@ -135,7 +131,7 @@ export default function OnboardingPage() {
               </p>
 
               <p className="text-sm mb-8" style={{ color: '#64748B' }}>
-                Verifique sua caixa de entrada (e a pasta de spam, só por garantia 😊)
+                Não esqueça de verificar a pasta de spam 😊
               </p>
 
               <div className="p-6 rounded-xl mb-8" style={{ backgroundColor: '#EFF6FF' }}>

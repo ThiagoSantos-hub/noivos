@@ -16,6 +16,7 @@ export default function OnboardingPage() {
   const [progress, setProgress] = useState(0)
   const [error, setError] = useState<string>('')
   const [isLoading, setIsLoading] = useState(false)
+  const [isSuccess, setIsSuccess] = useState(false)
 
   const handleSubmit = async (data: {
     nome_noiva: string
@@ -43,12 +44,13 @@ export default function OnboardingPage() {
       setProgress(40)
 
       // 2. Inserir dados na tabela `couples`
+      // Nota: a coluna correta no banco é data_casamento
       const { error: dbError } = await supabase.from('couples').insert({
         nome_noiva: data.nome_noiva,
         nome_noivo: data.nome_noivo,
         email_noiva: data.email_noiva,
         email_noivo: data.email_noivo,
-        wedding_date: data.data_casamento,
+        data_casamento: data.data_casamento,
         total_budget: data.orcamento_total,
         noiva_user_id: authData.user.id,
         bride_name: data.nome_noiva,
@@ -74,31 +76,21 @@ export default function OnboardingPage() {
           console.error('Erro na chamada da API de e-mail:', err)
         })
       } catch (emailErr) {
-        // Apenas loga o erro, sem interromper o cadastro
         console.error('Erro ao tentar disparar e-mails:', emailErr)
       }
 
       setProgress(100)
+      setIsSuccess(true)
 
-      // 3. Criar checkout no Asaas
+      // 4. Criar checkout no Asaas (opcional, mantido para fluxo futuro)
+      /*
       const checkoutResponse = await fetch('/api/payments/create-checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),
       })
+      */
 
-      const checkoutData = await checkoutResponse.json()
-
-      if (!checkoutResponse.ok) {
-        throw new Error(checkoutData.error || 'Erro ao gerar pagamento')
-      }
-
-      setProgress(100)
-
-      // Redirecionar para o checkout do Asaas
-      setTimeout(() => {
-        window.location.href = checkoutData.checkoutUrl
-      }, 500)
     } catch (err) {
       setProgress(0)
       setError(
@@ -114,54 +106,103 @@ export default function OnboardingPage() {
   return (
     <div className="h-screen flex flex-col overflow-y-auto" style={{ backgroundColor: '#FFFFFF' }}>
       {/* Barra de Progresso */}
-      <ProgressBar progress={progress} />
+      {!isSuccess && <ProgressBar progress={progress} />}
 
-      {/* Conteúdo Principal - Sem centralização vertical fixa para permitir scroll */}
+      {/* Conteúdo Principal */}
       <div className="flex-1 flex flex-col items-center px-6 py-8 pt-16">
         <div className="w-full max-w-md">
-          {/* Cabeçalho */}
-          <div className="mb-8 text-center flex flex-col items-center">
-            <div className="mb-0">
-              <div className="relative w-[80px] h-[80px] md:w-[120px] md:h-[120px]">
-                <Image
-                  src="/images/aliancas.png"
-                  alt="Alianças de casamento"
-                  fill
-                  style={{ objectFit: 'contain' }}
-                  priority
-                />
+          {isSuccess ? (
+            /* Tela de Sucesso Pós-Cadastro */
+            <div className="text-center animate-in fade-in zoom-in duration-500">
+              <div className="flex justify-center mb-6">
+                <div className="relative w-[120px] h-[120px]">
+                  <Image
+                    src="/images/aliancas.png"
+                    alt="Alianças de casamento"
+                    fill
+                    style={{ objectFit: 'contain' }}
+                    priority
+                  />
+                </div>
               </div>
-            </div>
-            <h1 className="text-2xl md:text-3xl font-bold mb-2 -mt-2" style={{ color: '#1E293B' }}>
-              Bem-vindo ao Noivos
-            </h1>
-            <p className="text-base" style={{ color: '#64748B' }}>
-              Vamos começar planejando seu casamento juntos
-            </p>
-          </div>
 
-          {/* Formulário */}
-          <div className="w-full">
-            <OnboardingForm
-              onSubmit={handleSubmit}
-              isLoading={isLoading}
-              error={error}
-            />
-          </div>
+              <h1 className="text-2xl md:text-3xl font-bold mb-4" style={{ color: '#1E3A8A' }}>
+                Vocês estão a caminho do altar! 💍
+              </h1>
 
-          {/* Rodapé */}
-          <div className="mt-8 text-center pb-8">
-            <p className="text-xs" style={{ color: '#64748B' }}>
-              Já tem uma conta?{' '}
+              <p className="text-base font-medium mb-2" style={{ color: '#1E293B' }}>
+                Seu cadastro foi realizado com sucesso. Enviamos as instruções de acesso para os e-mails de vocês.
+              </p>
+
+              <p className="text-sm mb-8" style={{ color: '#64748B' }}>
+                Verifique sua caixa de entrada (e a pasta de spam, só por garantia 😊)
+              </p>
+
+              <div className="p-6 rounded-xl mb-8" style={{ backgroundColor: '#EFF6FF' }}>
+                <p className="text-lg font-italic italic mb-1" style={{ color: '#1E3A8A' }}>
+                  "O amor nunca falha."
+                </p>
+                <p className="text-sm font-bold" style={{ color: '#1E3A8A' }}>
+                  — 1 Coríntios 13:8
+                </p>
+              </div>
+
               <a
                 href="/login"
-                className="font-semibold"
-                style={{ color: '#22C55E' }}
+                className="inline-block w-full py-4 rounded-xl text-white font-bold text-lg shadow-lg hover:shadow-xl transition-all active:scale-[0.98]"
+                style={{ backgroundColor: '#22C55E' }}
               >
-                Faça login aqui
+                Acessar o App
               </a>
-            </p>
-          </div>
+            </div>
+          ) : (
+            /* Formulário de Cadastro */
+            <>
+              {/* Cabeçalho */}
+              <div className="mb-8 text-center flex flex-col items-center">
+                <div className="mb-0">
+                  <div className="relative w-[80px] h-[80px] md:w-[120px] md:h-[120px]">
+                    <Image
+                      src="/images/aliancas.png"
+                      alt="Alianças de casamento"
+                      fill
+                      style={{ objectFit: 'contain' }}
+                      priority
+                    />
+                  </div>
+                </div>
+                <h1 className="text-2xl md:text-3xl font-bold mb-2 -mt-2" style={{ color: '#1E293B' }}>
+                  Bem-vindo ao Noivos
+                </h1>
+                <p className="text-base" style={{ color: '#64748B' }}>
+                  Vamos começar planejando seu casamento juntos
+                </p>
+              </div>
+
+              {/* Formulário */}
+              <div className="w-full">
+                <OnboardingForm
+                  onSubmit={handleSubmit}
+                  isLoading={isLoading}
+                  error={error}
+                />
+              </div>
+
+              {/* Rodapé */}
+              <div className="mt-8 text-center pb-8">
+                <p className="text-xs" style={{ color: '#64748B' }}>
+                  Já tem uma conta?{' '}
+                  <a
+                    href="/login"
+                    className="font-semibold"
+                    style={{ color: '#22C55E' }}
+                  >
+                    Faça login aqui
+                  </a>
+                </p>
+              </div>
+            </>
+          )}
         </div>
       </div>
     </div>

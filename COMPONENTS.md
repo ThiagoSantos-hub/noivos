@@ -194,7 +194,7 @@ São componentes que contêm lógica do projeto (mas não fazem chamadas diretas
 ### `CountdownBar`
 **Objetivo:** Exibe o countdown até o casamento com barra de progresso e alerta colorido.
 
-**Quando utilizar:** No Dashboard (`/inicio`), quando `wedding_date` está definida.
+**Quando utilizar:** No Dashboard (`/inicio`), quando `data_casamento` está definida.
 
 **Props disponíveis:**
 | Prop | Tipo | Descrição |
@@ -209,7 +209,7 @@ São componentes que contêm lógica do projeto (mas não fazem chamadas diretas
 
 **Exemplo de uso:**
 ```tsx
-<CountdownBar weddingDate={couple.wedding_date} createdAt={couple.created_at} />
+<CountdownBar weddingDate={couple.data_casamento} createdAt={couple.created_at} />
 ```
 
 ---

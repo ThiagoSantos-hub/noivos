@@ -100,9 +100,9 @@ export default function DashboardPage() {
       <CoupleHeader couple={couple} onUpdate={updateCoupleData} />
 
       {/* Barra de countdown — só exibe se tiver data do casamento */}
-      {couple.wedding_date ? (
+      {couple.data_casamento ? (
         <CountdownBar
-          weddingDate={couple.wedding_date}
+          weddingDate={couple.data_casamento}
           createdAt={couple.created_at}
         />
       ) : (

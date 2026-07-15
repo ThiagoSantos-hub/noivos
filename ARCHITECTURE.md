@@ -265,7 +265,7 @@ couples
 ├── id (uuid, PK)
 ├── partner_1_id (uuid, FK → auth.users)
 ├── partner_2_id (uuid, FK → auth.users, nullable)
-├── wedding_date (date, nullable)
+├── data_casamento (date, nullable)
 ├── wedding_name (text)         -- "Casamento de Thiago e Ana"
 ├── invite_token (text, unique) -- token para o 2º noivo entrar
 ├── created_at (timestamp)

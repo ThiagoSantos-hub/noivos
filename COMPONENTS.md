@@ -166,6 +166,102 @@ São componentes que contêm lógica do projeto (mas não fazem chamadas diretas
 
 ---
 
+### `CoupleHeader`
+**Objetivo:** Exibe a saudação "Olá, [Noiva] & [Noivo]! 💍" com edição inline dos nomes.
+
+**Quando utilizar:** No topo do Dashboard (`/inicio`).
+
+**Quando NÃO utilizar:** Em outras telas — é exclusivo do cabeçalho do dashboard.
+
+**Props disponíveis:**
+| Prop | Tipo | Descrição |
+|------|------|-----------|
+| `couple` | `Couple` | Dados do casal vindos do Supabase |
+| `onUpdate` | `(payload: CoupleUpdatePayload) => Promise<void>` | Callback para salvar nome editado |
+
+**Comportamento:**
+- Ao clicar no nome da noiva ou do noivo, abre campo de edição inline
+- Confirma com Enter ou botão ✓; cancela com Escape ou botão ✕
+- Salva no Supabase via `onUpdate`; exibe erro se falhar
+
+**Exemplo de uso:**
+```tsx
+<CoupleHeader couple={couple} onUpdate={updateCoupleData} />
+```
+
+---
+
+### `CountdownBar`
+**Objetivo:** Exibe o countdown até o casamento com barra de progresso e alerta colorido.
+
+**Quando utilizar:** No Dashboard (`/inicio`), quando `wedding_date` está definida.
+
+**Props disponíveis:**
+| Prop | Tipo | Descrição |
+|------|------|-----------|
+| `weddingDate` | `string` | Data do casamento (ISO 8601) |
+| `createdAt` | `string` | Data de criação do casal (para calcular progresso) |
+
+**Alertas:**
+- 🟢 Verde: mais de 6 meses
+- 🟡 Amarelo: entre 2 e 6 meses
+- 🔴 Vermelho: menos de 2 meses
+
+**Exemplo de uso:**
+```tsx
+<CountdownBar weddingDate={couple.wedding_date} createdAt={couple.created_at} />
+```
+
+---
+
+### `FinancialBar`
+**Objetivo:** Exibe o resumo financeiro (planejado, pago, faltando) com barra de progresso e alerta.
+
+**Quando utilizar:** No Dashboard (`/inicio`).
+
+**Props disponíveis:**
+| Prop | Tipo | Descrição |
+|------|------|-----------|
+| `totalBudget` | `number` | Orçamento total planejado |
+| `totalPaid` | `number` | Valor já pago |
+
+**Alertas:**
+- 🟢 Verde: menos de 50% comprometido
+- 🟡 Amarelo: entre 50% e 80%
+- 🔴 Vermelho: acima de 80%
+
+**Exemplo de uso:**
+```tsx
+<FinancialBar totalBudget={couple.total_budget ?? 0} totalPaid={couple.total_paid ?? 0} />
+```
+
+---
+
+### `BottomNav`
+**Objetivo:** Barra de navegação fixa no rodapé com ícones para as 5 seções do app.
+
+**Quando utilizar:** No layout do dashboard — aparece em todas as telas protegidas.
+
+**Quando NÃO utilizar:** Em telas de autenticação (`/login`, `/cadastro`).
+
+**Props:** Nenhuma — usa `usePathname()` internamente para destacar a rota ativa.
+
+**Rotas:**
+| Ícone | Label | Rota |
+|-------|-------|------|
+| 🏠 Home | Início | `/inicio` |
+| 💰 DollarSign | Financeiro | `/financeiro` |
+| 👥 Users | Convidados | `/convidados` |
+| ✅ CheckSquare | Tarefas | `/tarefas` |
+| ⚙️ MoreHorizontal | Mais | `/mais` |
+
+**Exemplo de uso:**
+```tsx
+<BottomNav />
+```
+
+---
+
 ## 📐 Padrões de Nomenclatura
 
 | Tipo | Padrão | Exemplo |

@@ -21,9 +21,26 @@ export interface Couple {
   id: string
   partner_1_id: string
   partner_2_id: string | null
-  wedding_date: string | null
+  // Nomes individuais dos noivos
+  bride_name: string
+  groom_name: string
+  // Nome composto do casal (ex: "Casamento de Ana e João")
   wedding_name: string
-  invite_token: string
+  wedding_date: string | null
+  // Data de criação do casal (para calcular progresso do countdown)
   created_at: string
   updated_at: string
+  invite_token: string
+  // Campos financeiros
+  total_budget: number | null
+  total_paid: number | null
+}
+
+export interface CoupleUpdatePayload {
+  bride_name?: string
+  groom_name?: string
+  wedding_name?: string
+  wedding_date?: string
+  total_budget?: number
+  total_paid?: number
 }

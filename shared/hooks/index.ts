@@ -3,3 +3,5 @@
  */
 
 export { useAuthRedirect } from './useAuthRedirect'
+export { useCouple } from './useCouple'
+export { useRequireAuth } from './useRequireAuth'

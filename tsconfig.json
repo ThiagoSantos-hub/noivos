@@ -40,6 +40,12 @@
       ],
       "@/utils/*": [
         "./shared/utils/*"
+      ],
+      "@/services/*": [
+        "./shared/services/*"
+      ],
+      "@/store/*": [
+        "./shared/store/*"
       ]
     },
     "allowJs": true,

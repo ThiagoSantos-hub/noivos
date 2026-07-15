@@ -22,7 +22,7 @@ export async function getCoupleByUser(): Promise<Couple | null> {
   const { data, error } = await supabase
     .from('couples')
     .select('*')
-    .or(`partner_1_id.eq.${userId},partner_2_id.eq.${userId}`)
+    .or(`noiva_user_id.eq.${userId},noivo_user_id.eq.${userId}`)
     .single()
 
   if (error) {

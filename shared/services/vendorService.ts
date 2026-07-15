@@ -36,7 +36,7 @@ export async function createVendor(payload: VendorCreatePayload): Promise<Vendor
   const { data: coupleData } = await supabase
     .from('couples')
     .select('id')
-    .or(`partner_1_id.eq.${userId},partner_2_id.eq.${userId}`)
+    .or(`noiva_user_id.eq.${userId},noivo_user_id.eq.${userId}`)
     .single()
 
   if (!coupleData) throw new Error('Casal não encontrado')

@@ -70,7 +70,7 @@ export default function OnboardingPage() {
         }),
       })
 
-      const registerData = await registerResponse.json()
+      const registerData = await registerResponse.json() as { error?: string }
 
       if (!registerResponse.ok) {
         throw new Error(registerData.error || 'Erro ao salvar dados do casal')
@@ -81,19 +81,23 @@ export default function OnboardingPage() {
       // 4. Disparar e-mails de boas-vindas via Brevo
       // Não bloqueia o fluxo principal em caso de erro no e-mail
       try {
-        fetch('/api/send-welcome-email', {
+        const emailResponse = await fetch('/api/send-welcome-email', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(data),
-        }).then(response => {
-          if (!response.ok) {
-            console.error('Falha ao disparar e-mails de boas-vindas via API')
-          }
-        }).catch(err => {
-          console.error('Erro na chamada da API de e-mail:', err)
         })
-      } catch (emailErr) {
-        console.error('Erro ao tentar disparar e-mails:', emailErr)
+
+        if (!emailResponse.ok) {
+          const emailData = await emailResponse.json() as { error?: string }
+          console.error('Falha ao disparar e-mails de boas-vindas via API', {
+            status: emailResponse.status,
+            error: emailData.error || 'Erro desconhecido',
+          })
+        }
+      } catch (emailError) {
+        console.error('Erro na chamada da API de e-mail', {
+          message: emailError instanceof Error ? emailError.message : 'Erro desconhecido',
+        })
       }
 
       setProgress(100)
@@ -106,6 +110,7 @@ export default function OnboardingPage() {
           ? err.message
           : 'Erro ao criar conta. Tente novamente.'
       )
+      throw err
     } finally {
       setIsLoading(false)
     }

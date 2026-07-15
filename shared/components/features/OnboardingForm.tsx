@@ -112,8 +112,8 @@ export function OnboardingForm({
         password: formData.password,
       })
       setSuccessMessage('Cadastro realizado com sucesso!')
-    } catch (err) {
-      console.error('Erro ao submeter formulário:', err)
+    } catch {
+      setSuccessMessage('')
     }
   }
 

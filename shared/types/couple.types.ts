@@ -34,6 +34,8 @@ export interface Couple {
   // Campos financeiros
   total_budget: number | null
   total_paid: number | null
+  // Convidados
+  expected_guests: number | null
 }
 
 export interface CoupleUpdatePayload {
@@ -43,4 +45,5 @@ export interface CoupleUpdatePayload {
   wedding_date?: string
   total_budget?: number
   total_paid?: number
+  expected_guests?: number
 }

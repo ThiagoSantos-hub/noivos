@@ -308,6 +308,33 @@ São componentes que contêm lógica do projeto (mas não fazem chamadas diretas
 
 ---
 
+### `GuestCard`
+**Objetivo:** Exibe resumo de um convidado (nome, status, mesa e telefone).
+
+**Quando utilizar:** Nas listas por grupo da página `/convidados`.
+
+**Props disponíveis:**
+| Prop | Tipo | Descrição |
+|------|------|-----------|
+| `guest` | `Guest` | Dados do convidado |
+| `onClick` | `(guest) => void` | Callback ao clicar no card |
+
+---
+
+### `GuestSummary`
+**Objetivo:** Painel de contagem total (cadastrados vs esperados) e status (confirmados/pendentes). Permite editar o total esperado inline.
+
+**Quando utilizar:** No topo da página `/convidados`.
+
+---
+
+### `GuestForm`
+**Objetivo:** Modal para criar ou editar um convidado, com seleção de grupo e status.
+
+**Quando utilizar:** Ao clicar no botão (+) ou em um card de convidado.
+
+---
+
 ## 📐 Padrões de Nomenclatura
 
 | Tipo | Padrão | Exemplo |

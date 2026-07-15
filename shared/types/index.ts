@@ -4,3 +4,4 @@
 
 export * from './couple.types'
 export * from './vendor.types'
+export * from './guest.types'

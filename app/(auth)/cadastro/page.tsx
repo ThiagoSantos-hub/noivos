@@ -33,23 +33,33 @@ export default function OnboardingPage() {
 
     try {
       // 1. Criar conta da noiva no Supabase Auth
+      console.log('Iniciando cadastro da noiva...', { email: data.email_noiva })
       const { data: authDataNoiva, error: authErrorNoiva } = await supabase.auth.signUp({
         email: data.email_noiva,
         password: data.password || '',
       })
 
-      if (authErrorNoiva) throw new Error(`Erro ao criar conta da noiva: ${authErrorNoiva.message}`)
+      if (authErrorNoiva) {
+        console.error('Falha no Supabase Auth (Noiva):', authErrorNoiva)
+        throw new Error(`Erro ao criar conta da noiva: ${authErrorNoiva.message}`)
+      }
+      console.log('Conta da noiva criada com sucesso:', authDataNoiva.user?.id)
       if (!authDataNoiva.user) throw new Error('Falha ao criar usuário (noiva)')
 
       setProgress(30)
 
       // 2. Criar conta do noivo no Supabase Auth
+      console.log('Iniciando cadastro do noivo...', { email: data.email_noivo })
       const { data: authDataNoivo, error: authErrorNoivo } = await supabase.auth.signUp({
         email: data.email_noivo,
         password: data.password || '',
       })
 
-      if (authErrorNoivo) throw new Error(`Erro ao criar conta do noivo: ${authErrorNoivo.message}`)
+      if (authErrorNoivo) {
+        console.error('Falha no Supabase Auth (Noivo):', authErrorNoivo)
+        throw new Error(`Erro ao criar conta do noivo: ${authErrorNoivo.message}`)
+      }
+      console.log('Conta do noivo criada com sucesso:', authDataNoivo.user?.id)
       if (!authDataNoivo.user) throw new Error('Falha ao criar usuário (noivo)')
 
       setProgress(40)

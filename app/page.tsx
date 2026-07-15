@@ -71,7 +71,7 @@ export default function LandingPage() {
       </section>
 
       {/* Nossa História */}
-      <section id="historia" className="py-20 px-6 max-w-5xl mx-auto">
+      <section id="historia" className="py-8 px-6 max-w-5xl mx-auto">
         <div className="text-center mb-16">
           <h2 className="text-3xl md:text-5xl font-serif font-bold text-blue-900 mb-4">Thiago & Rayana</h2>
           <div className="h-1 w-24 bg-green-500 mx-auto rounded-full"></div>
@@ -106,7 +106,7 @@ export default function LandingPage() {
         </div>
 
         {/* Capítulo 3: O Planejamento */}
-        <div className="flex flex-col md:flex-row items-center gap-12 mb-24">
+        <div className="flex flex-col md:flex-row items-center gap-12 mb-8">
           <div className="flex-1 relative aspect-[4/3] w-full rounded-3xl overflow-hidden shadow-2xl">
             <Image src="/images/historia/planejamento.jpg" alt="O Planejamento" fill className="object-cover" />
           </div>
@@ -121,7 +121,7 @@ export default function LandingPage() {
       </section>
 
       {/* Chamada para Ação Final */}
-      <section className="bg-slate-50 py-12 px-6 text-center">
+      <section className="bg-slate-50 py-8 px-6 text-center">
         <div className="max-w-3xl mx-auto">
           <h2 className="text-4xl font-serif font-bold text-blue-900 mb-3">1º de Maio de 2027</h2>
           <p className="text-xl text-slate-600 mb-6">
@@ -169,7 +169,7 @@ export default function LandingPage() {
       </section>
 
       {/* Footer */}
-      <footer className="py-12 border-t border-slate-100 text-center text-slate-400 text-sm">
+      <footer className="py-6 border-t border-slate-100 text-center text-slate-400 text-sm">
         <p>© 2026 Noivos App - Criado com amor por Thiago & Rayana</p>
       </footer>
     </div>

@@ -2,7 +2,7 @@
 
 /**
  * CoupleHeader — exibe "Olá, [Noiva] & [Noivo]! 💍"
- * Permite edição inline do nome da noiva e do noivo ao tocar no texto
+ * Permite edição inline do nome da noiva e do noivo
  */
 
 import { useState, useCallback, useRef, useEffect } from 'react'
@@ -23,7 +23,6 @@ export function CoupleHeader({ couple, onUpdate }: ICoupleHeaderProps) {
   const [saveError, setSaveError] = useState<string | null>(null)
   const inputRef = useRef<HTMLInputElement>(null)
 
-  // Foca o input ao abrir edição
   useEffect(() => {
     if (editingField && inputRef.current) {
       inputRef.current.focus()
@@ -56,7 +55,6 @@ export function CoupleHeader({ couple, onUpdate }: ICoupleHeaderProps) {
       return
     }
 
-    // Sem mudança, apenas fechar
     if (trimmed === couple[editingField]) {
       cancelEditing()
       return
@@ -74,7 +72,6 @@ export function CoupleHeader({ couple, onUpdate }: ICoupleHeaderProps) {
     }
   }, [editingField, editValue, couple, onUpdate, cancelEditing])
 
-  // Confirma ao pressionar Enter, cancela com Escape
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent<HTMLInputElement>) => {
       if (e.key === 'Enter') confirmEdit()
@@ -101,7 +98,7 @@ export function CoupleHeader({ couple, onUpdate }: ICoupleHeaderProps) {
             onKeyDown={handleKeyDown}
             aria-label={`Editar ${label}`}
             className="
-              inline-block w-36 px-2 py-0.5 text-2xl font-bold
+              inline-block w-32 px-2 py-0.5 text-xl font-semibold
               border-b-2 border-primary-DEFAULT bg-transparent
               text-text-primary outline-none
               focus:border-success-DEFAULT transition-colors
@@ -109,34 +106,14 @@ export function CoupleHeader({ couple, onUpdate }: ICoupleHeaderProps) {
             disabled={isSaving}
           />
           {isSaving ? (
-            <Loader2
-              size={18}
-              className="animate-spin text-text-secondary"
-              aria-label="Salvando..."
-            />
+            <Loader2 size={16} className="animate-spin text-text-secondary" />
           ) : (
             <>
-              <button
-                onClick={confirmEdit}
-                aria-label="Confirmar edição"
-                className="
-                  p-1 rounded-full text-success-DEFAULT
-                  hover:bg-green-50 transition-colors min-w-[44px] min-h-[44px]
-                  flex items-center justify-center
-                "
-              >
-                <Check size={18} />
+              <button onClick={confirmEdit} className="p-1 text-success-DEFAULT hover:bg-green-50 rounded-full">
+                <Check size={16} />
               </button>
-              <button
-                onClick={cancelEditing}
-                aria-label="Cancelar edição"
-                className="
-                  p-1 rounded-full text-danger
-                  hover:bg-red-50 transition-colors min-w-[44px] min-h-[44px]
-                  flex items-center justify-center
-                "
-              >
-                <X size={18} />
+              <button onClick={cancelEditing} className="p-1 text-danger hover:bg-red-50 rounded-full">
+                <X size={16} />
               </button>
             </>
           )}
@@ -147,52 +124,27 @@ export function CoupleHeader({ couple, onUpdate }: ICoupleHeaderProps) {
     return (
       <button
         onClick={() => startEditing(field)}
-        aria-label={`Editar ${label}: ${value}`}
-        className="
-          inline-flex items-center gap-1 group
-          text-primary-dark font-bold
-          hover:text-primary-DEFAULT transition-colors
-          focus:outline-none focus:ring-2 focus:ring-primary-DEFAULT
-          focus:ring-offset-1 rounded-sm
-        "
+        className="inline-flex items-center gap-1 group text-primary-dark font-semibold hover:text-primary-DEFAULT transition-colors"
       >
         <span>{value}</span>
-        <Pencil
-          size={14}
-          className="
-            opacity-0 group-hover:opacity-100 group-focus:opacity-100
-            transition-opacity text-text-secondary
-          "
-          aria-hidden="true"
-        />
+        <Pencil size={13} className="opacity-0 group-hover:opacity-100 transition-opacity text-text-secondary" />
       </button>
     )
   }
 
   return (
-    <header className="px-4 pt-6 pb-4">
-      <h1 className="text-2xl font-bold text-text-primary leading-tight">
+    <header className="px-4 pt-5 pb-3">
+      <h1 className="text-xl font-bold text-text-primary flex items-center gap-1 flex-wrap">
         Olá,{' '}
-        {renderName('bride_name', couple.bride_name, 'nome da noiva')}{' '}
-        <span className="text-text-secondary font-normal">&amp;</span>{' '}
+        {renderName('bride_name', couple.bride_name, 'nome da noiva')}
+        <span className="text-text-secondary font-normal mx-0.5">&</span>
         {renderName('groom_name', couple.groom_name, 'nome do noivo')}!{' '}
-        <span aria-label="anel de noivado" role="img">
-          💍
-        </span>
+        <span>💍</span>
       </h1>
 
-      {saveError && (
-        <p
-          role="alert"
-          className="mt-1 text-sm text-danger"
-        >
-          {saveError}
-        </p>
-      )}
+      {saveError && <p className="mt-1 text-xs text-danger">{saveError}</p>}
 
-      <p className="mt-1 text-sm text-text-secondary">
-        Bem-vindos ao painel do casamento
-      </p>
+      <p className="mt-0.5 text-xs text-text-secondary">Bem-vindos ao painel do casamento</p>
     </header>
   )
 }

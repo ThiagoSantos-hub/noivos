@@ -10,6 +10,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
 import { LoginForm } from '@/components/features/LoginForm'
+import { supabase } from '@/services/supabase'
 
 export default function LoginPage(): React.ReactElement {
   const router = useRouter()
@@ -24,17 +25,29 @@ export default function LoginPage(): React.ReactElement {
     setIsLoading(true)
 
     try {
-      // TODO: Chamar endpoint POST /auth/login
-      // Por enquanto, simular sucesso
-      console.log('Dados de login:', data)
+      const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
+        email: data.email,
+        password: data.password,
+      })
 
-      // Simular delay de API
-      await new Promise((resolve) => setTimeout(resolve, 1000))
+      if (authError) {
+        // Mensagens amigáveis para os erros mais comuns
+        if (authError.message.includes('Invalid login credentials')) {
+          throw new Error('Email ou senha incorretos')
+        }
+        if (authError.message.includes('Email not confirmed')) {
+          throw new Error('Confirme seu email antes de fazer login. Verifique sua caixa de entrada.')
+        }
+        throw new Error(authError.message)
+      }
 
-      // Redirecionar para o dashboard após sucesso
-      setTimeout(() => {
-        router.push('/inicio')
-      }, 500)
+      if (!authData.session) {
+        throw new Error('Não foi possível iniciar a sessão. Tente novamente.')
+      }
+
+      // Redireciona para o dashboard
+      router.push('/inicio')
+      router.refresh()
     } catch (err) {
       setError(
         err instanceof Error

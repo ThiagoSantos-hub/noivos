@@ -32,10 +32,18 @@ export default function OnboardingPage() {
     setIsLoading(true)
 
     try {
+      const password = data.password || ''
+
       // 1. Criar conta da noiva no Supabase Auth
       const { data: authDataNoiva, error: authErrorNoiva } = await supabase.auth.signUp({
         email: data.email_noiva,
-        password: data.password || '',
+        password,
+        options: {
+          data: {
+            full_name: data.nome_noiva,
+            role: 'bride',
+          },
+        },
       })
 
       if (authErrorNoiva) throw new Error(`Erro ao criar conta da noiva: ${authErrorNoiva.message}`)
@@ -46,7 +54,13 @@ export default function OnboardingPage() {
       // 2. Criar conta do noivo no Supabase Auth
       const { data: authDataNoivo, error: authErrorNoivo } = await supabase.auth.signUp({
         email: data.email_noivo,
-        password: data.password || '',
+        password,
+        options: {
+          data: {
+            full_name: data.nome_noivo,
+            role: 'groom',
+          },
+        },
       })
 
       if (authErrorNoivo) throw new Error(`Erro ao criar conta do noivo: ${authErrorNoivo.message}`)
@@ -100,6 +114,10 @@ export default function OnboardingPage() {
         })
       }
 
+      // 5. Encerra qualquer sessão criada durante o signUp
+      // para que o usuário faça login limpo na tela de login
+      await supabase.auth.signOut()
+
       setProgress(100)
       setIsSuccess(true)
 
@@ -110,6 +128,8 @@ export default function OnboardingPage() {
           ? err.message
           : 'Erro ao criar conta. Tente novamente.'
       )
+      // Tenta limpar sessão residual em caso de erro parcial
+      await supabase.auth.signOut().catch(() => {})
       throw err
     } finally {
       setIsLoading(false)

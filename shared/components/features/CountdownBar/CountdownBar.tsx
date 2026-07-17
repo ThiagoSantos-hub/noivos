@@ -1,7 +1,7 @@
 'use client'
 
 /**
- * CountdownBar com barra animada e visual mais premium
+ * CountdownBar com visual mais premium
  */
 
 import { useMemo } from 'react'
@@ -66,7 +66,7 @@ export function CountdownBar({ weddingDate, createdAt }: ICountdownBarProps) {
     : `Faltam ${days} ${days === 1 ? 'dia' : 'dias'}!`
 
   return (
-    <section className="mx-3 mb-4 p-4 bg-white rounded-2xl shadow-xl border border-gray-200">
+    <section className="mx-3 mb-4 p-4 bg-white rounded-2xl shadow-2xl border border-gray-200">
       <div className="flex items-center justify-between mb-2">
         <h2 className="text-sm font-semibold text-text-primary">⏳ Contagem Regressiva</h2>
         <span className="text-xs text-text-secondary">{progress}% percorrido</span>
@@ -76,7 +76,6 @@ export function CountdownBar({ weddingDate, createdAt }: ICountdownBarProps) {
         {countdownText}
       </p>
 
-      {/* Barra animada */}
       <div className="w-full h-3 bg-gray-100 rounded-full overflow-hidden mb-3">
         <motion.div
           className="h-full bg-success-DEFAULT rounded-full"

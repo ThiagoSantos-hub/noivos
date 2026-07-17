@@ -1,7 +1,7 @@
 'use client'
 
 /**
- * FinancialBar com barra animada e visual mais premium
+ * FinancialBar com visual mais premium
  */
 
 import { useMemo } from 'react'
@@ -57,7 +57,7 @@ export function FinancialBar({ totalBudget, totalPaid }: IFinancialBarProps) {
 
   if (totalBudget <= 0) {
     return (
-      <section className="mx-3 mb-4 p-4 bg-white rounded-2xl shadow-xl border border-gray-200">
+      <section className="mx-3 mb-4 p-4 bg-white rounded-2xl shadow-2xl border border-gray-200">
         <h2 className="text-sm font-semibold text-text-primary mb-2">💰 Financeiro</h2>
         <p className="text-xs text-text-secondary">Nenhum orçamento cadastrado ainda.</p>
       </section>
@@ -65,7 +65,7 @@ export function FinancialBar({ totalBudget, totalPaid }: IFinancialBarProps) {
   }
 
   return (
-    <section className="mx-3 mb-4 p-4 bg-white rounded-2xl shadow-xl border border-gray-200">
+    <section className="mx-3 mb-4 p-4 bg-white rounded-2xl shadow-2xl border border-gray-200">
       <div className="flex items-center justify-between mb-2">
         <h2 className="text-sm font-semibold text-text-primary">💰 Financeiro</h2>
         <span className="text-xs text-text-secondary">{progress}% pago</span>
@@ -79,7 +79,6 @@ export function FinancialBar({ totalBudget, totalPaid }: IFinancialBarProps) {
         Falta <span className="font-semibold text-primary-dark">{formatCurrency(remaining)}</span>
       </p>
 
-      {/* Barra animada */}
       <div className="w-full h-3 bg-gray-100 rounded-full overflow-hidden mb-3">
         <motion.div
           className="h-full bg-success-DEFAULT rounded-full"

@@ -1,21 +1,9 @@
 /**
- * Cliente Supabase — instância única para toda a aplicação
- * Usa as variáveis de ambiente do projeto (staging ou produção)
+ * Ponto de entrada do cliente Supabase
+ *
+ * - Para Client Components: import { supabase } from '@/services/supabase'
+ * - Para Server Components / Route Handlers: import { createClient } from '@/services/supabase/server'
+ * - Para o middleware: import { updateSession } from '@/services/supabase/middleware'
  */
 
-import { createClient } from '@supabase/supabase-js'
-
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || ''
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
-
-// Fallback silencioso durante o build para evitar erro fatal de pré-renderização
-export const supabase = createClient(
-  supabaseUrl || 'https://placeholder.supabase.co',
-  supabaseAnonKey || 'placeholder',
-  {
-  auth: {
-    persistSession: true,
-    autoRefreshToken: true,
-    detectSessionInUrl: true,
-  },
-})
+export { supabase, createClient } from './supabase/client'

@@ -1,7 +1,7 @@
 'use client'
 
 /**
- * DashboardPage — tela principal com visual mais premium (sombras, 3D, motion)
+ * DashboardPage — tela principal com visual mais premium
  */
 
 import { useCouple } from '@/hooks/useCouple'
@@ -30,8 +30,8 @@ export default function DashboardPage() {
 
       <CoupleHeader couple={couple} onUpdate={updateCoupleData} />
 
-      {/* Boas-vindas */}
-      <section className="mx-3 mb-4 p-4 bg-white rounded-2xl shadow-lg border border-gray-200">
+      {/* Boas-vindas com sombra forte */}
+      <section className="mx-3 mb-4 p-4 bg-white rounded-2xl shadow-2xl border border-gray-200">
         <div className="text-center">
           <p className="text-sm font-medium text-primary-dark mb-1.5">
             Que esse tempo de planejamento seja repleto de amor, sonhos e momentos inesquecíveis.
@@ -43,14 +43,13 @@ export default function DashboardPage() {
         </div>
       </section>
 
-      {/* Countdown só aparece se tiver data */}
       {couple.data_casamento ? (
         <CountdownBar
           weddingDate={couple.data_casamento}
           createdAt={couple.created_at}
         />
       ) : (
-        <section className="mx-3 mb-4 p-4 bg-primary-light rounded-2xl border border-blue-200">
+        <section className="mx-3 mb-4 p-4 bg-primary-light rounded-2xl border border-blue-200 shadow-md">
           <p className="text-sm text-primary-dark font-medium">
             ⏳ Defina a data do casamento para ver a contagem regressiva!
           </p>

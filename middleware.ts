@@ -1,20 +1,12 @@
-import { NextResponse } from 'next/server'
-import type { NextRequest } from 'next/server'
+import { type NextRequest, NextResponse } from 'next/server'
+import { updateSession } from '@/services/supabase/middleware'
 
 /**
- * Middleware básico de proteção de rotas do dashboard.
+ * Middleware de autenticação
  *
- * Observação importante:
- * O Supabase client atual está configurado com persistência em localStorage
- * (padrão do @supabase/supabase-js no browser). Por isso este middleware
- * ainda é limitado — ele só consegue ver cookies.
- *
- * Próximo passo recomendado (após este PR):
- * 1. Instalar @supabase/ssr
- * 2. Configurar createServerClient + cookies
- * 3. Atualizar este middleware para validar a sessão de forma confiável
- *
- * Enquanto isso, a proteção client-side (useRequireAuth) continua ativa.
+ * - Renova a sessão do Supabase automaticamente (cookies)
+ * - Protege as rotas do dashboard
+ * - Redireciona usuários autenticados que tentam acessar /login ou /cadastro
  */
 
 const PROTECTED_PREFIXES = [
@@ -28,7 +20,8 @@ const PROTECTED_PREFIXES = [
 
 const PUBLIC_AUTH_PATHS = ['/login', '/cadastro']
 
-export function middleware(request: NextRequest) {
+export async function middleware(request: NextRequest) {
+  const { user, supabaseResponse } = await updateSession(request)
   const { pathname } = request.nextUrl
 
   const isProtected = PROTECTED_PREFIXES.some(
@@ -39,29 +32,19 @@ export function middleware(request: NextRequest) {
     (path) => pathname === path || pathname.startsWith(`${path}/`)
   )
 
-  // Tenta detectar presença de cookie de sessão do Supabase
-  // (quando o client estiver configurado para usar cookies)
-  const hasSupabaseCookie = request.cookies
-    .getAll()
-    .some(
-      (cookie) =>
-        cookie.name.includes('sb-') &&
-        (cookie.name.includes('auth-token') || cookie.name.includes('access-token'))
-    )
-
-  // Se for rota protegida e não houver indício de sessão → login
-  if (isProtected && !hasSupabaseCookie) {
+  // Rota protegida sem usuário autenticado → redireciona para login
+  if (isProtected && !user) {
     const loginUrl = new URL('/login', request.url)
     loginUrl.searchParams.set('redirectedFrom', pathname)
     return NextResponse.redirect(loginUrl)
   }
 
-  // Se já estiver autenticado e tentar acessar login/cadastro → dashboard
-  if (isAuthPage && hasSupabaseCookie) {
+  // Usuário autenticado tentando acessar login/cadastro → vai para o dashboard
+  if (isAuthPage && user) {
     return NextResponse.redirect(new URL('/inicio', request.url))
   }
 
-  return NextResponse.next()
+  return supabaseResponse
 }
 
 export const config = {

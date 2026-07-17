@@ -2,7 +2,7 @@
 
 /**
  * DashboardPage — tela principal do app (/inicio)
- * Exibe cabeçalho editável, countdown e barra financeira
+ * Exibe cabeçalho editável, boas-vindas com versículo e barras de countdown + financeiro
  */
 
 import { useCouple } from '@/hooks/useCouple'
@@ -25,6 +25,13 @@ export default function DashboardPage() {
         <div className="animate-pulse">
           <div className="h-8 bg-gray-200 rounded-md w-3/4 mb-2" />
           <div className="h-4 bg-gray-100 rounded-md w-1/2" />
+        </div>
+
+        {/* Skeleton do welcome */}
+        <div className="animate-pulse bg-white rounded-lg shadow-sm p-4 border border-gray-100">
+          <div className="h-5 bg-gray-200 rounded w-1/2 mb-3" />
+          <div className="h-4 bg-gray-100 rounded w-3/4 mb-2" />
+          <div className="h-4 bg-gray-100 rounded w-2/3" />
         </div>
 
         {/* Skeleton do countdown */}
@@ -71,7 +78,7 @@ export default function DashboardPage() {
     )
   }
 
-  // Dados do casal não encontrados (casal não criado ainda)
+  // Dados do casal não encontrados
   if (!couple) {
     return (
       <div
@@ -99,6 +106,19 @@ export default function DashboardPage() {
       {/* Cabeçalho com nome editável */}
       <CoupleHeader couple={couple} onUpdate={updateCoupleData} />
 
+      {/* Seção de Boas-Vindas com versículo */}
+      <section className="mx-4 mb-6 p-5 bg-white rounded-2xl shadow-sm border border-gray-100">
+        <div className="text-center">
+          <p className="text-lg font-medium text-primary-dark mb-2">
+            Que esse tempo de planejamento seja repleto de amor, sonhos e momentos inesquecíveis.
+          </p>
+          <p className="text-sm italic text-text-secondary">
+            "O amor é paciente, o amor é bondoso. [...] O amor nunca falha."
+            <span className="block mt-1 not-italic text-xs">— 1 Coríntios 13:4,8</span>
+          </p>
+        </div>
+      </section>
+
       {/* Barra de countdown — só exibe se tiver data do casamento */}
       {couple.data_casamento ? (
         <CountdownBar
@@ -111,7 +131,7 @@ export default function DashboardPage() {
           className="mx-4 mb-4 p-4 bg-primary-light rounded-lg border border-blue-200"
         >
           <p className="text-sm text-primary-dark font-medium">
-            ⏳ Defina a data do casamento para ver o countdown!
+            ⏳ Defina a data do casamento para ver a contagem regressiva!
           </p>
         </section>
       )}

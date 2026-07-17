@@ -43,10 +43,19 @@ export default function DashboardPage() {
         </div>
       </section>
 
-      <CountdownBar
-        weddingDate={couple.data_casamento}
-        createdAt={couple.created_at}
-      />
+      {/* Countdown só aparece se tiver data */}
+      {couple.data_casamento ? (
+        <CountdownBar
+          weddingDate={couple.data_casamento}
+          createdAt={couple.created_at}
+        />
+      ) : (
+        <section className="mx-3 mb-4 p-4 bg-primary-light rounded-2xl border border-blue-200">
+          <p className="text-sm text-primary-dark font-medium">
+            ⏳ Defina a data do casamento para ver a contagem regressiva!
+          </p>
+        </section>
+      )}
 
       <FinancialBar
         totalBudget={couple.total_budget ?? 0}

@@ -54,7 +54,6 @@ function getAuthErrorMessage(error: unknown, context: string): string {
       return `${context}: ${raw}`
     }
 
-    // Fallback quando a mensagem vem vazia
     return `${context}: falha na autenticação (status ${authError.status ?? 'desconhecido'}, code ${authError.code ?? 'n/a'}). Verifique se o email já existe no Supabase ou se as chaves estão corretas.`
   }
 
@@ -139,7 +138,7 @@ export default function OnboardingPage() {
 
       setProgress(40)
 
-      // 3. Inserir dados na tabela `couples` via API (usando SERVICE_ROLE_KEY no servidor)
+      // 3. Inserir dados na tabela `couples` via API (SERVICE_ROLE_KEY no servidor)
       const registerResponse = await fetch('/api/auth/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -163,7 +162,7 @@ export default function OnboardingPage() {
 
       setProgress(70)
 
-      // 4. Disparar e-mails de boas-vindas via Brevo
+      // 4. E-mails de boas-vindas (não bloqueia o fluxo)
       try {
         const emailResponse = await fetch('/api/send-welcome-email', {
           method: 'POST',
@@ -188,7 +187,7 @@ export default function OnboardingPage() {
         })
       }
 
-      // 5. Encerra qualquer sessão criada durante o signUp
+      // 5. Limpa sessão residual do signUp
       await supabase.auth.signOut()
 
       setProgress(100)
@@ -196,13 +195,16 @@ export default function OnboardingPage() {
 
     } catch (err) {
       setProgress(0)
-      setError(
+      const message =
         err instanceof Error
           ? err.message
           : 'Erro ao criar conta. Tente novamente.'
-      )
+
+      setError(message)
       await supabase.auth.signOut().catch(() => {})
-      // Não relança o erro para evitar unhandled rejection no form
+
+      // Relança para o OnboardingForm não mostrar "sucesso" falso
+      throw err
     } finally {
       setIsLoading(false)
     }

@@ -2,7 +2,6 @@
 
 /**
  * CountdownBar — exibe o countdown até o casamento
- * Inclui barra de progresso verde e alerta colorido por urgência
  */
 
 import { useMemo } from 'react'
@@ -68,31 +67,27 @@ export function CountdownBar({ weddingDate, createdAt }: ICountdownBarProps) {
   return (
     <section
       aria-label="Contagem regressiva para o casamento"
-      className="mx-4 mb-4 p-4 bg-white rounded-lg shadow-sm border border-gray-100"
+      className="mx-3 mb-3 p-3 bg-white rounded-xl shadow-sm border border-gray-100"
     >
-      {/* Título da seção */}
-      <div className="flex items-center justify-between mb-3">
-        <h2 className="text-base font-semibold text-text-primary">
+      <div className="flex items-center justify-between mb-2">
+        <h2 className="text-sm font-semibold text-text-primary">
           ⏳ Contagem Regressiva
         </h2>
-        <span className="text-xs text-text-secondary">
+        <span className="text-[10px] text-text-secondary">
           {progress}% percorrido
         </span>
       </div>
 
-      {/* Texto principal */}
-      <p className="text-lg font-bold text-primary-dark mb-3">
+      <p className="text-base font-bold text-primary-dark mb-2">
         {countdownText}
       </p>
 
-      {/* Barra de progresso */}
       <div
         role="progressbar"
         aria-valuenow={progress}
         aria-valuemin={0}
         aria-valuemax={100}
-        aria-label={`${progress}% do tempo até o casamento já passou`}
-        className="w-full h-3 bg-gray-100 rounded-full overflow-hidden mb-3"
+        className="w-full h-2.5 bg-gray-100 rounded-full overflow-hidden mb-2"
       >
         <div
           className="h-full bg-success-DEFAULT rounded-full transition-all duration-500"
@@ -100,16 +95,12 @@ export function CountdownBar({ weddingDate, createdAt }: ICountdownBarProps) {
         />
       </div>
 
-      {/* Alerta de status */}
       {!isPast && (
         <div
           role="status"
-          className={`
-            flex items-start gap-2 px-3 py-2 rounded-md border text-sm
-            ${alert.bg} ${alert.border} ${alert.text}
-          `}
+          className={`flex items-start gap-1.5 px-2.5 py-1.5 rounded-md border text-xs ${alert.bg} ${alert.border} ${alert.text}`}
         >
-          <span aria-hidden="true">{alert.icon}</span>
+          <span>{alert.icon}</span>
           <span>{alert.message}</span>
         </div>
       )}

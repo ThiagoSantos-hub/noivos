@@ -45,7 +45,6 @@ export default function FinanceiroPage() {
   const remainingBudget = Math.max(0, totalPlanned - totalExpenses)
   const progress = totalPlanned > 0 ? Math.round((totalPaid / totalPlanned) * 100) : 0
 
-  // Salvar orçamento planejado
   const savePlannedBudget = async () => {
     const newBudget = parseFloat(plannedBudgetInput)
     if (isNaN(newBudget) || newBudget < 0) {
@@ -83,7 +82,6 @@ export default function FinanceiroPage() {
     await loadExpenses()
   }
 
-  // Editar despesa
   const startEditExpense = (exp: any) => {
     setEditingExpense(exp)
     setNewExpense({
@@ -130,7 +128,6 @@ export default function FinanceiroPage() {
     <div className="p-4 max-w-3xl mx-auto">
       <h1 className="text-2xl font-bold mb-6">Financeiro</h1>
 
-      {/* Editar Orçamento Planejado */}
       <div className="flex items-end gap-3 mb-6">
         <div className="flex-1">
           <label className="text-sm text-text-secondary">Orçamento Planejado</label>
@@ -177,9 +174,7 @@ export default function FinanceiroPage() {
 
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-lg font-semibold">Despesas</h2>
-        <button onClick={() => { setEditingExpense(null); setShowForm(!showForm); }} className="px-4 py-2 bg-blue-600 text-white rounded-xl text-sm font-medium">
-          + Adicionar Despesa
-        </button>
+        <button onClick={() => { setEditingExpense(null); setShowForm(!showForm); }} className="px-4 py-2 bg-blue-600 text-white rounded-xl text-sm font-medium">+ Adicionar Despesa</button>
       </div>
 
       {showForm && (

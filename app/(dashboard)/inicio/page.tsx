@@ -28,7 +28,7 @@ export default function DashboardPage() {
     <>
       <title>Início — Noivos</title>
 
-      <CoupleHeader couple={couple} onUpdate={updateCoupleData} />
+      <CoupleHeader couple={couple} />
 
       {/* Boas-vindas com sombra forte */}
       <section className="mx-3 mb-4 p-4 bg-white rounded-2xl shadow-2xl border border-gray-200">

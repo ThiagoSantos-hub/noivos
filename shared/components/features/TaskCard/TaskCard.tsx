@@ -1,8 +1,7 @@
 'use client'
 
 /**
- * TaskCard — exibe uma tarefa com checkbox de conclusão, badge de prioridade,
- * data limite e responsável. Ao clicar no card (fora do checkbox) abre edição.
+ * TaskCard — com estilo 3D (sombra forte)
  */
 
 import { useCallback } from 'react'
@@ -56,9 +55,12 @@ export function TaskCard({ task, onClick, onToggle }: ITaskCardProps) {
       onClick={handleCardClick}
       onKeyDown={(e) => e.key === 'Enter' && handleCardClick()}
       className={`
-        flex items-start gap-3 p-4 bg-white rounded-lg shadow-sm border
-        cursor-pointer transition-all active:scale-[0.99]
-        ${isDone ? 'border-gray-100 opacity-70' : 'border-gray-200 hover:border-primary-DEFAULT hover:shadow-md'}
+        flex items-start gap-3 p-4 bg-white rounded-2xl shadow-2xl border
+        cursor-pointer transition-all active:scale-[0.98]
+        ${isDone 
+          ? 'border-gray-100 opacity-75' 
+          : 'border-gray-200 hover:border-green-400'
+        }
       `}
       aria-label={`Tarefa: ${task.title}`}
     >
@@ -68,18 +70,19 @@ export function TaskCard({ task, onClick, onToggle }: ITaskCardProps) {
         onClick={handleToggle}
         aria-label={isDone ? 'Marcar como pendente' : 'Marcar como concluída'}
         className={`
-          flex-shrink-0 mt-0.5 w-5 h-5 rounded-full border-2 flex items-center justify-center
-          transition-all focus:outline-none focus:ring-2 focus:ring-success-DEFAULT focus:ring-offset-1
+          flex-shrink-0 mt-0.5 w-6 h-6 rounded-full border-2 flex items-center justify-center
+          transition-all focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-1
+          shadow-md
           ${isDone
-            ? 'bg-success-DEFAULT border-success-DEFAULT'
-            : 'border-gray-300 hover:border-success-DEFAULT'
+            ? 'bg-green-600 border-green-600'
+            : 'border-gray-300 hover:border-green-500 bg-white'
           }
         `}
       >
         {isDone && (
           <svg
-            width="10"
-            height="8"
+            width="12"
+            height="10"
             viewBox="0 0 10 8"
             fill="none"
             xmlns="http://www.w3.org/2000/svg"
@@ -98,7 +101,6 @@ export function TaskCard({ task, onClick, onToggle }: ITaskCardProps) {
 
       {/* Conteúdo */}
       <div className="flex-1 min-w-0">
-        {/* Título */}
         <p
           className={`
             text-sm font-semibold leading-snug break-words
@@ -108,13 +110,11 @@ export function TaskCard({ task, onClick, onToggle }: ITaskCardProps) {
           {task.title}
         </p>
 
-        {/* Metadados */}
         <div className="flex flex-wrap items-center gap-2 mt-2">
-          {/* Badge de prioridade */}
           {task.priority && (
             <span
               className={`
-                inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold border
+                inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold border shadow-sm
                 ${PRIORITY_CONFIG[task.priority].className}
               `}
             >
@@ -122,24 +122,21 @@ export function TaskCard({ task, onClick, onToggle }: ITaskCardProps) {
             </span>
           )}
 
-          {/* Data limite */}
           {task.due_date && (
             <span className="inline-flex items-center gap-1 text-xs text-text-secondary">
-              <Calendar size={11} aria-hidden="true" />
+              <Calendar size={12} />
               {formatDate(task.due_date)}
             </span>
           )}
 
-          {/* Responsável */}
           {task.assignee && (
             <span className="inline-flex items-center gap-1 text-xs text-text-secondary">
-              <User size={11} aria-hidden="true" />
+              <User size={12} />
               {ASSIGNEE_LABEL[task.assignee]}
             </span>
           )}
         </div>
 
-        {/* Observações */}
         {task.notes && !isDone && (
           <p className="mt-1.5 text-xs text-text-secondary line-clamp-2 break-words">
             {task.notes}

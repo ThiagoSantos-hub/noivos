@@ -1,7 +1,7 @@
 'use client'
 
 /**
- * TaskCard — com estilo 3D (sombra forte)
+ * TaskCard — com estilo 3D e suporte a responsável 'Ambos'
  */
 
 import { useCallback } from 'react'
@@ -26,6 +26,7 @@ const PRIORITY_CONFIG: Record<
 const ASSIGNEE_LABEL: Record<string, string> = {
   bride: 'Noiva',
   groom: 'Noivo',
+  both: 'Ambos',
 }
 
 function formatDate(dateStr: string): string {
@@ -64,7 +65,6 @@ export function TaskCard({ task, onClick, onToggle }: ITaskCardProps) {
       `}
       aria-label={`Tarefa: ${task.title}`}
     >
-      {/* Checkbox */}
       <button
         type="button"
         onClick={handleToggle}
@@ -99,7 +99,6 @@ export function TaskCard({ task, onClick, onToggle }: ITaskCardProps) {
         )}
       </button>
 
-      {/* Conteúdo */}
       <div className="flex-1 min-w-0">
         <p
           className={`
@@ -132,7 +131,7 @@ export function TaskCard({ task, onClick, onToggle }: ITaskCardProps) {
           {task.assignee && (
             <span className="inline-flex items-center gap-1 text-xs text-text-secondary">
               <User size={12} />
-              {ASSIGNEE_LABEL[task.assignee]}
+              {ASSIGNEE_LABEL[task.assignee] || task.assignee}
             </span>
           )}
         </div>

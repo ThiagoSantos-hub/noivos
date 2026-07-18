@@ -1,12 +1,7 @@
 'use client'
 
 /**
- * Página de Convidados - versão limpa e organizada
- * - Remove "Recusaram"
- * - Remove bonequinhos azuis
- * - Adiciona grupo "Contratados"
- * - Total editável com salvamento
- * - Modal de adicionar convidado centralizado e visível
+ * Página de Convidados - limpa
  */
 
 import { useState, useEffect } from 'react'
@@ -101,6 +96,8 @@ export default function ConvidadosPage() {
       setShowForm(false)
       setSelectedGroup('')
       await loadGuests()
+    } else {
+      alert('Erro ao adicionar. Verifique se o SQL de permissão foi rodado.')
     }
   }
 
@@ -123,7 +120,6 @@ export default function ConvidadosPage() {
     <div className="p-4 max-w-3xl mx-auto">
       <div className="flex items-center gap-2 mb-6">
         <h1 className="text-2xl font-bold">Convidados</h1>
-        <span className="text-2xl">👥</span>
       </div>
 
       {/* Total de Convidados - Editável */}
@@ -169,7 +165,7 @@ export default function ConvidadosPage() {
         </div>
       </div>
 
-      {/* Grupos de Convidados */}
+      {/* Grupos */}
       {Object.entries(GROUP_LABELS).map(([key, label]) => {
         const groupGuests = groupedGuests[key] || []
 
@@ -198,9 +194,7 @@ export default function ConvidadosPage() {
               ) : (
                 groupGuests.map((guest) => (
                   <div key={guest.id} className="px-4 py-3 flex items-center justify-between hover:bg-gray-50">
-                    <div className="flex items-center gap-3">
-                      <span className={guest.confirmed ? 'line-through text-gray-400' : ''}>{guest.name}</span>
-                    </div>
+                    <span className={guest.confirmed ? 'line-through text-gray-400' : ''}>{guest.name}</span>
                     <div className="flex items-center gap-2">
                       <button
                         onClick={() => toggleConfirm(guest)}
@@ -222,7 +216,7 @@ export default function ConvidadosPage() {
         )
       })}
 
-      {/* Modal de Adicionar Convidado - Centralizado e Visível */}
+      {/* Modal Centralizado */}
       {showForm && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
           <div className="bg-white w-full max-w-md rounded-2xl p-6 shadow-xl">

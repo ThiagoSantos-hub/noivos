@@ -1,7 +1,7 @@
 'use client'
 
 /**
- * Página de Financeiro - visual melhorado e responsivo
+ * Página de Financeiro - corrigido overflow e adição de despesas
  */
 
 import { useState } from 'react'
@@ -25,13 +25,19 @@ export default function FinanceiroPage() {
   const progress = totalBudget > 0 ? Math.round((totalPaid / totalBudget) * 100) : 0
 
   const handleAddExpense = () => {
-    if (!newExpense.name || !newExpense.amount) return
+    const amountNum = parseFloat(newExpense.amount)
+    const paidNum = parseFloat(newExpense.paid) || 0
+
+    if (!newExpense.name.trim() || isNaN(amountNum) || amountNum <= 0) {
+      alert('Preencha o nome e um valor válido para a despesa.')
+      return
+    }
 
     const expense = {
       id: Date.now(),
-      name: newExpense.name,
-      amount: parseFloat(newExpense.amount),
-      paid: parseFloat(newExpense.paid) || 0,
+      name: newExpense.name.trim(),
+      amount: amountNum,
+      paid: paidNum,
     }
 
     setExpenses([...expenses, expense])
@@ -43,19 +49,19 @@ export default function FinanceiroPage() {
     <div className="p-4 max-w-3xl mx-auto">
       <h1 className="text-2xl font-bold mb-6">Financeiro</h1>
 
-      {/* Cards de resumo - responsivo e com sombra forte */}
+      {/* Cards de resumo - agora com proteção contra overflow */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
-        <div className="bg-white p-4 rounded-2xl shadow-2xl border border-gray-200">
+        <div className="bg-white p-4 rounded-2xl shadow-2xl border border-gray-200 min-w-0">
           <p className="text-sm text-text-secondary mb-1">Orçamento Total</p>
-          <p className="text-2xl font-bold">{formatCurrency(totalBudget)}</p>
+          <p className="text-xl sm:text-2xl font-bold break-words">{formatCurrency(totalBudget)}</p>
         </div>
-        <div className="bg-white p-4 rounded-2xl shadow-2xl border border-gray-200">
+        <div className="bg-white p-4 rounded-2xl shadow-2xl border border-gray-200 min-w-0">
           <p className="text-sm text-text-secondary mb-1">Já Pago</p>
-          <p className="text-2xl font-bold text-success-dark">{formatCurrency(totalPaid)}</p>
+          <p className="text-xl sm:text-2xl font-bold text-success-dark break-words">{formatCurrency(totalPaid)}</p>
         </div>
-        <div className="bg-white p-4 rounded-2xl shadow-2xl border border-gray-200">
+        <div className="bg-white p-4 rounded-2xl shadow-2xl border border-gray-200 min-w-0">
           <p className="text-sm text-text-secondary mb-1">Falta Pagar</p>
-          <p className="text-2xl font-bold text-primary-dark">{formatCurrency(remaining)}</p>
+          <p className="text-xl sm:text-2xl font-bold text-primary-dark break-words">{formatCurrency(remaining)}</p>
         </div>
       </div>
 
@@ -119,7 +125,7 @@ export default function FinanceiroPage() {
         </div>
       )}
 
-      {/* Lista de despesas */}
+      {/* Lista */}
       <div className="space-y-3">
         {expenses.length === 0 ? (
           <div className="text-center py-8 text-text-secondary">
@@ -128,13 +134,13 @@ export default function FinanceiroPage() {
         ) : (
           expenses.map((exp) => (
             <div key={exp.id} className="bg-white p-4 rounded-2xl shadow-xl border flex justify-between items-center">
-              <div>
-                <p className="font-semibold">{exp.name}</p>
+              <div className="min-w-0">
+                <p className="font-semibold truncate">{exp.name}</p>
                 <p className="text-sm text-text-secondary">
                   {formatCurrency(exp.paid)} pagos de {formatCurrency(exp.amount)}
                 </p>
               </div>
-              <div className="text-right">
+              <div className="text-right flex-shrink-0 ml-3">
                 <p className="font-bold text-primary-dark">{formatCurrency(exp.amount - exp.paid)}</p>
                 <p className="text-xs text-text-secondary">restante</p>
               </div>

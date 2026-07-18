@@ -16,7 +16,8 @@ const GROUP_LABELS: Record<string, string> = {
   convidado_noivo: 'Convidados do Noivo',
   padrinho: 'Padrinhos do Noivo',
   madrinha: 'Madrinhas da Noiva',
-  contratados: 'Contratados (Fotógrafo, Cerimonialista, etc.)',
+  profissionais_contratados: 'Profissionais Contratados',
+  daminhas_pajens: 'Daminhas e Pajens',
 }
 
 const GROUP_ICONS: Record<string, string> = {
@@ -26,7 +27,8 @@ const GROUP_ICONS: Record<string, string> = {
   convidado_noivo: '🤵‍♂️',
   padrinho: '🤵‍♂️',
   madrinha: '👰‍♀️',
-  contratados: '💼',
+  profissionais_contratados: '💼',
+  daminhas_pajens: '👧👦',
 }
 
 export default function ConvidadosPage() {
@@ -71,7 +73,8 @@ export default function ConvidadosPage() {
     convidado_noivo: guests.filter(g => g.group_type === 'convidado_noivo'),
     padrinho: guests.filter(g => g.group_type === 'padrinho'),
     madrinha: guests.filter(g => g.group_type === 'madrinha'),
-    contratados: guests.filter(g => g.group_type === 'contratados'),
+    profissionais_contratados: guests.filter(g => g.group_type === 'profissionais_contratados'),
+    daminhas_pajens: guests.filter(g => g.group_type === 'daminhas_pajens'),
   }
 
   const saveExpectedTotal = async () => {

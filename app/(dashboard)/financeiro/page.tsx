@@ -1,14 +1,14 @@
 'use client'
 
 /**
- * Página de Financeiro - UI limpa com ícones de lápis para edição
+ * Página de Financeiro - edição inline limpa
  */
 
 import { useState, useEffect } from 'react'
 import { useCouple } from '@/hooks/useCouple'
 import { supabase } from '@/services/supabase'
 import { formatCurrency } from '@/utils/formatters'
-import { Pencil } from 'lucide-react'
+import { Pencil, Check, X } from 'lucide-react'
 
 export default function FinanceiroPage() {
   const { couple, isLoading: coupleLoading, updateCoupleData } = useCouple()
@@ -17,8 +17,8 @@ export default function FinanceiroPage() {
   const [showForm, setShowForm] = useState(false)
   const [editingExpense, setEditingExpense] = useState<any>(null)
   const [newExpense, setNewExpense] = useState({ name: '', amount: '', paid: '' })
-  const [isEditingBudget, setIsEditingBudget] = useState(false)
-  const [budgetInput, setBudgetInput] = useState('')
+  const [editingBudget, setEditingBudget] = useState(false)
+  const [budgetValue, setBudgetValue] = useState('')
 
   const loadExpenses = async () => {
     if (!couple?.id) return
@@ -35,7 +35,7 @@ export default function FinanceiroPage() {
   useEffect(() => {
     if (couple?.id) {
       loadExpenses()
-      setBudgetInput((couple.total_budget ?? 0).toString())
+      setBudgetValue((couple.total_budget ?? 0).toString())
     }
   }, [couple?.id])
 
@@ -48,10 +48,10 @@ export default function FinanceiroPage() {
   const progress = totalPlanned > 0 ? Math.round((totalPaid / totalPlanned) * 100) : 0
 
   const saveBudget = async () => {
-    const newValue = parseFloat(budgetInput)
-    if (isNaN(newValue) || newValue < 0) return
-    await updateCoupleData({ total_budget: newValue })
-    setIsEditingBudget(false)
+    const newVal = parseFloat(budgetValue)
+    if (isNaN(newVal) || newVal < 0) return
+    await updateCoupleData({ total_budget: newVal })
+    setEditingBudget(false)
   }
 
   const handleAddOrUpdateExpense = async () => {
@@ -87,11 +87,7 @@ export default function FinanceiroPage() {
 
   const startEditExpense = (exp: any) => {
     setEditingExpense(exp)
-    setNewExpense({
-      name: exp.name,
-      amount: exp.amount.toString(),
-      paid: (exp.paid_amount || 0).toString()
-    })
+    setNewExpense({ name: exp.name, amount: exp.amount.toString(), paid: (exp.paid_amount || 0).toString() })
     setShowForm(true)
   }
 
@@ -109,16 +105,34 @@ export default function FinanceiroPage() {
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-        <div className="bg-white p-4 rounded-2xl shadow-2xl border border-gray-200 relative">
-          <div className="flex justify-between items-start">
-            <div>
-              <p className="text-sm text-text-secondary">Orçamento Planejado</p>
-              <p className="text-2xl font-bold">{formatCurrency(totalPlanned)}</p>
+        {/* Orçamento Planejado com edição inline */}
+        <div className="bg-white p-4 rounded-2xl shadow-2xl border border-gray-200">
+          {!editingBudget ? (
+            <div className="flex justify-between items-start">
+              <div>
+                <p className="text-sm text-text-secondary">Orçamento Planejado</p>
+                <p className="text-2xl font-bold">{formatCurrency(totalPlanned)}</p>
+              </div>
+              <button onClick={() => setEditingBudget(true)} className="text-gray-400 hover:text-gray-600 mt-1">
+                <Pencil size={16} />
+              </button>
             </div>
-            <button onClick={() => setIsEditingBudget(true)} className="text-gray-400 hover:text-gray-600">
-              <Pencil size={16} />
-            </button>
-          </div>
+          ) : (
+            <div>
+              <p className="text-sm text-text-secondary mb-1">Orçamento Planejado</p>
+              <div className="flex gap-2">
+                <input
+                  type="number"
+                  value={budgetValue}
+                  onChange={(e) => setBudgetValue(e.target.value)}
+                  className="flex-1 border rounded-lg px-2 py-1 text-lg font-bold"
+                  autoFocus
+                />
+                <button onClick={saveBudget} className="p-1.5 text-green-600 hover:bg-green-50 rounded"><Check size={18} /></button>
+                <button onClick={() => setEditingBudget(false)} className="p-1.5 text-red-600 hover:bg-red-50 rounded"><X size={18} /></button>
+              </div>
+            </div>
+          )}
         </div>
 
         <div className="bg-white p-4 rounded-2xl shadow-2xl border border-gray-200">
@@ -136,16 +150,6 @@ export default function FinanceiroPage() {
           <p className="text-2xl font-bold text-primary-dark">{formatCurrency(remainingBudget)}</p>
         </div>
       </div>
-
-      {isEditingBudget && (
-        <div className="bg-white p-4 rounded-2xl shadow mb-4 border">
-          <div className="flex gap-2">
-            <input type="number" value={budgetInput} onChange={(e) => setBudgetInput(e.target.value)} className="flex-1 border rounded-lg px-3 py-2" />
-            <button onClick={saveBudget} className="px-4 bg-green-600 text-white rounded-lg">Salvar</button>
-            <button onClick={() => setIsEditingBudget(false)} className="px-4 bg-gray-200 rounded-lg">Cancelar</button>
-          </div>
-        </div>
-      )}
 
       <div className="mb-6">
         <div className="flex justify-between text-sm mb-1.5">

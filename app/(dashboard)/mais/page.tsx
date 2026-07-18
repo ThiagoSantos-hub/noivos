@@ -1,11 +1,11 @@
 'use client'
 
 /**
- * Página Mais — menu de Configurações e Meu Plano
+ * Página Mais — menu de Configurações, Meu Plano e Feedback
  */
 
 import Link from 'next/link'
-import { Settings, CreditCard, ChevronRight, LogOut } from 'lucide-react'
+import { Settings, CreditCard, MessageSquare, ChevronRight, LogOut } from 'lucide-react'
 import { supabase } from '@/services/supabase'
 import { useRouter } from 'next/navigation'
 
@@ -51,6 +51,23 @@ export default function MaisPage() {
             <div>
               <p className="font-semibold text-text-primary">Meu Plano</p>
               <p className="text-xs text-text-secondary">Pagamento e vencimento</p>
+            </div>
+          </div>
+          <ChevronRight size={20} className="text-gray-400" />
+        </Link>
+
+        {/* Feedback */}
+        <Link
+          href="/feedback"
+          className="flex items-center justify-between bg-white p-4 rounded-2xl shadow-lg border border-gray-100 active:scale-[0.98] transition-all"
+        >
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-purple-50 rounded-xl flex items-center justify-center">
+              <MessageSquare size={20} className="text-purple-600" />
+            </div>
+            <div>
+              <p className="font-semibold text-text-primary">Feedback</p>
+              <p className="text-xs text-text-secondary">Sugestões e reportar erros</p>
             </div>
           </div>
           <ChevronRight size={20} className="text-gray-400" />

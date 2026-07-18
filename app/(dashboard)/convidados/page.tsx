@@ -1,7 +1,12 @@
 'use client'
 
 /**
- * Página de Convidados - estrutura completa conforme solicitado
+ * Página de Convidados - versão limpa e organizada
+ * - Remove "Recusaram"
+ * - Remove bonequinhos azuis
+ * - Adiciona grupo "Contratados"
+ * - Total editável com salvamento
+ * - Modal de adicionar convidado centralizado e visível
  */
 
 import { useState, useEffect } from 'react'
@@ -9,23 +14,24 @@ import { useCouple } from '@/hooks/useCouple'
 import { supabase } from '@/services/supabase'
 import { Pencil, Check, X, UserPlus } from 'lucide-react'
 
-// Tipos de grupo
-const GROUP_LABELS = {
+const GROUP_LABELS: Record<string, string> = {
   familia_noiva: 'Família da Noiva',
   familia_noivo: 'Família do Noivo',
   convidado_noiva: 'Convidados da Noiva',
   convidado_noivo: 'Convidados do Noivo',
   padrinho: 'Padrinhos do Noivo',
   madrinha: 'Madrinhas da Noiva',
+  contratados: 'Contratados (Fotógrafo, Cerimonialista, etc.)',
 }
 
-const GROUP_ICONS = {
+const GROUP_ICONS: Record<string, string> = {
   familia_noiva: '👰‍♀️',
   familia_noivo: '🤵‍♂️',
   convidado_noiva: '👰‍♀️',
   convidado_noivo: '🤵‍♂️',
   padrinho: '🤵‍♂️',
   madrinha: '👰‍♀️',
+  contratados: '💼',
 }
 
 export default function ConvidadosPage() {
@@ -59,19 +65,18 @@ export default function ConvidadosPage() {
 
   if (coupleLoading || loading || !couple) return <div className="p-4">Carregando...</div>
 
-  // Cálculos
   const confirmedCount = guests.filter(g => g.confirmed).length
   const pendingCount = guests.length - confirmedCount
   const expectedGuests = couple.expected_guests ?? 0
 
-  // Agrupar convidados
-  const groupedGuests = {
+  const groupedGuests: Record<string, any[]> = {
     familia_noiva: guests.filter(g => g.group_type === 'familia_noiva'),
     familia_noivo: guests.filter(g => g.group_type === 'familia_noivo'),
     convidado_noiva: guests.filter(g => g.group_type === 'convidado_noiva'),
     convidado_noivo: guests.filter(g => g.group_type === 'convidado_noivo'),
     padrinho: guests.filter(g => g.group_type === 'padrinho'),
     madrinha: guests.filter(g => g.group_type === 'madrinha'),
+    contratados: guests.filter(g => g.group_type === 'contratados'),
   }
 
   const saveExpectedTotal = async () => {
@@ -121,7 +126,7 @@ export default function ConvidadosPage() {
         <span className="text-2xl">👥</span>
       </div>
 
-      {/* Total de Convidados */}
+      {/* Total de Convidados - Editável */}
       <div className="bg-white p-5 rounded-2xl shadow-2xl border mb-6">
         <div className="flex justify-between items-start">
           <div>
@@ -150,10 +155,9 @@ export default function ConvidadosPage() {
               {confirmedCount} confirmados de {expectedGuests} esperados
             </p>
           </div>
-          <div className="text-4xl opacity-80">👥</div>
         </div>
 
-        <div className="grid grid-cols-3 gap-3 mt-4 text-center">
+        <div className="grid grid-cols-2 gap-3 mt-4 text-center">
           <div>
             <p className="text-2xl font-bold text-green-600">{confirmedCount}</p>
             <p className="text-xs text-text-secondary">CONFIRMADOS</p>
@@ -162,22 +166,18 @@ export default function ConvidadosPage() {
             <p className="text-2xl font-bold text-yellow-600">{pendingCount}</p>
             <p className="text-xs text-text-secondary">PENDENTES</p>
           </div>
-          <div>
-            <p className="text-2xl font-bold text-gray-400">0</p>
-            <p className="text-xs text-text-secondary">RECUSARAM</p>
-          </div>
         </div>
       </div>
 
       {/* Grupos de Convidados */}
       {Object.entries(GROUP_LABELS).map(([key, label]) => {
-        const groupGuests = groupedGuests[key as keyof typeof groupedGuests] || []
+        const groupGuests = groupedGuests[key] || []
 
         return (
           <div key={key} className="bg-white rounded-2xl shadow border mb-4 overflow-hidden">
             <div className="px-4 py-3 bg-gray-50 flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <span className="text-xl">{GROUP_ICONS[key as keyof typeof GROUP_ICONS]}</span>
+                <span className="text-xl">{GROUP_ICONS[key]}</span>
                 <span className="font-semibold">{label}</span>
                 <span className="text-sm text-text-secondary">({groupGuests.length})</span>
               </div>
@@ -222,13 +222,15 @@ export default function ConvidadosPage() {
         )
       })}
 
-      {/* Formulário de adicionar */}
+      {/* Modal de Adicionar Convidado - Centralizado e Visível */}
       {showForm && (
-        <div className="fixed inset-0 bg-black/40 flex items-end justify-center z-50">
-          <div className="bg-white w-full max-w-md rounded-t-2xl p-5">
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white w-full max-w-md rounded-2xl p-6 shadow-xl">
             <div className="flex justify-between items-center mb-4">
-              <h3 className="font-semibold">Adicionar Convidado</h3>
-              <button onClick={() => { setShowForm(false); setSelectedGroup('') }}><X /></button>
+              <h3 className="font-semibold text-lg">Adicionar Convidado</h3>
+              <button onClick={() => { setShowForm(false); setSelectedGroup('') }}>
+                <X size={22} />
+              </button>
             </div>
 
             <input
@@ -236,16 +238,25 @@ export default function ConvidadosPage() {
               placeholder="Nome do convidado"
               value={newGuestName}
               onChange={(e) => setNewGuestName(e.target.value)}
-              className="w-full border rounded-lg px-3 py-2 mb-3"
+              className="w-full border rounded-lg px-4 py-3 mb-4 text-lg"
+              autoFocus
             />
 
-            <button
-              onClick={addGuest}
-              disabled={!newGuestName.trim()}
-              className="w-full bg-green-600 text-white py-3 rounded-xl font-semibold disabled:opacity-50"
-            >
-              Adicionar
-            </button>
+            <div className="flex gap-3">
+              <button
+                onClick={addGuest}
+                disabled={!newGuestName.trim()}
+                className="flex-1 bg-green-600 text-white py-3 rounded-xl font-semibold disabled:opacity-50"
+              >
+                Adicionar
+              </button>
+              <button
+                onClick={() => { setShowForm(false); setSelectedGroup('') }}
+                className="px-6 py-3 bg-gray-200 rounded-xl font-medium"
+              >
+                Cancelar
+              </button>
+            </div>
           </div>
         </div>
       )}

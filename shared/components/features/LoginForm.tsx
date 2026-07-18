@@ -1,6 +1,5 @@
 /**
  * LoginForm - Formulário de login do casal
- * Segue rigorosamente DESIGN-SYSTEM.md
  */
 
 'use client'
@@ -37,7 +36,6 @@ export function LoginForm({
       ...prev,
       [name]: value,
     }))
-    // Limpar erro do campo quando o usuário começa a digitar
     if (touched[name]) {
       const newErrors = loginValidations.validateLoginForm({
         ...formData,
@@ -53,7 +51,6 @@ export function LoginForm({
       ...prev,
       [name]: true,
     }))
-    // Validar o campo ao sair do foco
     const newErrors = loginValidations.validateLoginForm(formData)
     setErrors(newErrors)
   }
@@ -63,12 +60,10 @@ export function LoginForm({
   ): Promise<void> => {
     e.preventDefault()
 
-    // Validar formulário completo
     const newErrors = loginValidations.validateLoginForm(formData)
 
     if (loginValidations.hasLoginValidationErrors(newErrors)) {
       setErrors(newErrors)
-      // Marcar todos os campos como tocados para mostrar erros
       setTouched({
         email: true,
         password: true,
@@ -90,14 +85,12 @@ export function LoginForm({
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
-      {/* Mensagem de erro externa */}
       {externalError && (
         <div className="flex items-center gap-3 p-4 bg-red-50 border border-red-200 rounded-lg">
           <p className="text-sm text-red-700">{externalError}</p>
         </div>
       )}
 
-      {/* Campo de Email */}
       <Input
         label="Email"
         name="email"
@@ -110,7 +103,6 @@ export function LoginForm({
         disabled={isLoading}
       />
 
-      {/* Campo de Senha */}
       <Input
         label="Senha"
         name="password"
@@ -121,9 +113,9 @@ export function LoginForm({
         onBlur={handleBlur}
         error={touched.password ? errors.password : undefined}
         disabled={isLoading}
+        showPasswordToggle
       />
 
-      {/* Botão de Envio */}
       <Button
         type="submit"
         label={isLoading ? 'Entrando...' : 'Entrar'}
@@ -132,7 +124,6 @@ export function LoginForm({
         className="w-full h-12"
       />
 
-      {/* Link para cadastro */}
       <div className="text-center">
         <p className="text-sm" style={{ color: '#64748B' }}>
           Não tem conta?{' '}

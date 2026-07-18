@@ -8,7 +8,7 @@ export type TaskCategory = 'ceremony' | 'party'
 
 export type TaskPriority = 'high' | 'medium' | 'low'
 
-export type TaskAssignee = 'bride' | 'groom'
+export type TaskAssignee = 'bride' | 'groom' | 'both'
 
 export interface Task {
   id: string

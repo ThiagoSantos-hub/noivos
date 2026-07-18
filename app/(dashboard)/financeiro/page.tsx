@@ -60,7 +60,6 @@ export default function FinanceiroPage() {
       return
     }
 
-    // Atualiza total pago do casal
     await updateCoupleData({ total_paid: totalPaid + paidNum })
 
     setNewExpense({ name: '', amount: '', paid: '' })

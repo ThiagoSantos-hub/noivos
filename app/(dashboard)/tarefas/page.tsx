@@ -1,15 +1,7 @@
 'use client'
 
 /**
- * TarefasPage — Tela de gestão de tarefas do casamento
- * Rota: /tarefas (protegida pelo layout do dashboard)
- *
- * Funcionalidades:
- * - Listagem por categoria (Cerimônia e Festa)
- * - Contagem de tarefas concluídas no topo
- * - Adicionar, editar e excluir tarefas
- * - Marcar como concluída diretamente no card
- * - Sincronização em tempo real entre os dois dispositivos
+ * TarefasPage — botões limpos e sempre visíveis
  */
 
 import { useState, useMemo, useCallback } from 'react'
@@ -18,7 +10,6 @@ import { useTasks } from '@/hooks/useTasks'
 import { TaskCard, TaskForm } from '@/components/features'
 import type { Task, TaskCategory, TaskCreatePayload } from '@/types/task.types'
 
-// Configuração das categorias exibidas na tela
 const CATEGORIES_CONFIG: Record<TaskCategory, { label: string; icon: string }> = {
   ceremony: { label: 'Cerimônia', icon: '⛪' },
   party: { label: 'Festa', icon: '🎉' },
@@ -32,7 +23,6 @@ export default function TarefasPage() {
   const [searchTerm, setSearchTerm] = useState('')
   const [collapsedCategories, setCollapsedCategories] = useState<Record<string, boolean>>({})
 
-  // Filtra tarefas pelo termo de busca
   const filteredTasks = useMemo(
     () =>
       tasks.filter((t) =>
@@ -41,7 +31,6 @@ export default function TarefasPage() {
     [tasks, searchTerm]
   )
 
-  // Agrupa tarefas por categoria
   const tasksByCategory = useMemo(
     () =>
       filteredTasks.reduce(
@@ -55,7 +44,6 @@ export default function TarefasPage() {
     [filteredTasks]
   )
 
-  // Contagem global de concluídas
   const doneCount = useMemo(
     () => tasks.filter((t) => t.status === 'done').length,
     [tasks]
@@ -100,23 +88,12 @@ export default function TarefasPage() {
     <div className="flex flex-col min-h-full pb-20">
       <title>Tarefas — Noivos</title>
 
-      {/* Header fixo */}
-      <header className="sticky top-0 z-40 bg-white px-4 pt-6 pb-4 shadow-sm">
+      {/* Header */}
+      <header className="sticky top-0 z-40 bg-white px-4 pt-6 pb-4 shadow-md">
         <div className="flex justify-between items-center mb-3">
           <h1 className="text-2xl font-bold text-text-primary">
-            Tarefas ✅
+            Tarefas
           </h1>
-          <button
-            onClick={handleAddClick}
-            className="
-              w-10 h-10 bg-success-DEFAULT text-white rounded-full
-              flex items-center justify-center shadow-md
-              hover:bg-success-dark active:scale-95 transition-all
-            "
-            aria-label="Adicionar nova tarefa"
-          >
-            <Plus size={24} />
-          </button>
         </div>
 
         {/* Contador de progresso */}
@@ -129,19 +106,14 @@ export default function TarefasPage() {
                 <span className="font-semibold text-text-primary">{totalCount}</span>
                 {' tarefas concluídas'}
               </p>
-              <span className="text-xs font-semibold text-success-dark">
+              <span className="text-xs font-semibold text-green-700">
                 {totalCount > 0 ? Math.round((doneCount / totalCount) * 100) : 0}%
               </span>
             </div>
-            <div className="w-full h-1.5 bg-gray-200 rounded-full overflow-hidden">
+            <div className="w-full h-2 bg-gray-200 rounded-full overflow-hidden shadow-inner">
               <div
-                className="h-full bg-success-DEFAULT rounded-full transition-all duration-500"
+                className="h-full bg-green-500 rounded-full transition-all duration-500"
                 style={{ width: `${totalCount > 0 ? (doneCount / totalCount) * 100 : 0}%` }}
-                role="progressbar"
-                aria-valuenow={doneCount}
-                aria-valuemin={0}
-                aria-valuemax={totalCount}
-                aria-label="Progresso das tarefas"
               />
             </div>
           </div>
@@ -152,7 +124,6 @@ export default function TarefasPage() {
           <Search
             size={18}
             className="absolute left-3 top-1/2 -translate-y-1/2 text-text-secondary"
-            aria-hidden="true"
           />
           <input
             type="text"
@@ -160,11 +131,10 @@ export default function TarefasPage() {
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="
-              w-full pl-10 pr-4 py-2 bg-gray-50 border border-gray-200
-              rounded-full text-sm outline-none focus:border-primary-DEFAULT
-              focus:ring-2 focus:ring-primary-light transition-all
+              w-full pl-10 pr-4 py-2.5 bg-white border border-gray-200
+              rounded-xl text-sm outline-none focus:border-green-500
+              focus:ring-2 focus:ring-green-100 transition-all shadow-sm
             "
-            aria-label="Buscar tarefa pelo título"
           />
         </div>
       </header>
@@ -172,26 +142,20 @@ export default function TarefasPage() {
       {/* Conteúdo principal */}
       <main className="flex-1 px-4 pt-4">
         {isLoading ? (
-          /* Skeleton de carregamento */
           <div className="space-y-4">
-            <div className="animate-pulse bg-white h-8 w-40 rounded-md shadow-sm border border-gray-100" />
             {[1, 2, 3].map((i) => (
               <div
                 key={i}
-                className="animate-pulse bg-white h-20 rounded-lg shadow-sm border border-gray-100"
+                className="animate-pulse bg-white h-20 rounded-2xl shadow-md border border-gray-100"
               />
             ))}
           </div>
         ) : error ? (
-          /* Estado de erro */
           <div className="py-12 text-center">
-            <p className="text-danger mb-4">{error}</p>
+            <p className="text-red-600 mb-4">{error}</p>
             <button
               onClick={() => window.location.reload()}
-              className="
-                px-6 py-2 bg-primary-dark text-white rounded-full text-sm
-                font-semibold hover:bg-primary-DEFAULT transition-colors
-              "
+              className="px-6 py-2.5 bg-green-600 text-white rounded-xl text-sm font-semibold shadow-lg"
             >
               Tentar novamente
             </button>
@@ -199,28 +163,45 @@ export default function TarefasPage() {
         ) : totalCount === 0 && !searchTerm ? (
           /* Estado vazio */
           <div className="py-16 text-center">
-            <p className="text-4xl mb-3">📋</p>
+            <p className="text-5xl mb-4">📋</p>
             <h2 className="text-lg font-bold text-text-primary mb-1">
               Nenhuma tarefa ainda
             </h2>
-            <p className="text-sm text-text-secondary mb-6">
+            <p className="text-sm text-text-secondary mb-8">
               Comece adicionando as primeiras tarefas do casamento.
             </p>
             <button
               onClick={handleAddClick}
               className="
-                inline-flex items-center gap-2 px-6 py-2.5 bg-success-DEFAULT
-                text-white rounded-full text-sm font-semibold shadow-md
-                hover:bg-success-dark transition-colors
+                inline-flex items-center gap-2 px-8 py-3.5 bg-green-600
+                text-white rounded-2xl text-base font-bold
+                shadow-[0_8px_20px_rgba(22,163,74,0.35)]
+                hover:bg-green-700 active:scale-95 transition-all
               "
             >
-              <Plus size={18} />
+              <Plus size={22} strokeWidth={2.5} />
               Adicionar tarefa
             </button>
           </div>
         ) : (
           /* Lista por categoria */
           <div className="space-y-6">
+            {/* Botão Nova tarefa — sempre visível e com sombra 3D */}
+            <div className="flex justify-end">
+              <button
+                onClick={handleAddClick}
+                className="
+                  inline-flex items-center gap-2 px-5 py-2.5 bg-green-600
+                  text-white rounded-xl text-sm font-semibold
+                  shadow-[0_6px_16px_rgba(22,163,74,0.4)]
+                  hover:bg-green-700 active:scale-95 transition-all
+                "
+              >
+                <Plus size={18} />
+                Nova tarefa
+              </button>
+            </div>
+
             {(Object.keys(CATEGORIES_CONFIG) as TaskCategory[]).map((categoryKey) => {
               const categoryTasks = tasksByCategory[categoryKey] || []
               const isCollapsed = collapsedCategories[categoryKey]
@@ -229,18 +210,13 @@ export default function TarefasPage() {
 
               return (
                 <section key={categoryKey} className="space-y-3">
-                  {/* Cabeçalho da seção */}
                   <button
                     type="button"
                     onClick={() => toggleCategory(categoryKey)}
                     className="w-full flex justify-between items-center text-primary-dark"
-                    aria-expanded={!isCollapsed}
-                    aria-controls={`category-${categoryKey}`}
                   >
                     <div className="flex items-center gap-2">
-                      <span className="text-lg" aria-hidden="true">
-                        {config.icon}
-                      </span>
+                      <span className="text-lg">{config.icon}</span>
                       <h2 className="font-bold text-sm uppercase tracking-wider">
                         {config.label}
                       </h2>
@@ -249,17 +225,13 @@ export default function TarefasPage() {
                       </span>
                     </div>
                     {isCollapsed
-                      ? <ChevronDown size={20} aria-hidden="true" />
-                      : <ChevronUp size={20} aria-hidden="true" />
+                      ? <ChevronDown size={20} />
+                      : <ChevronUp size={20} />
                     }
                   </button>
 
-                  {/* Lista de tarefas da categoria */}
                   {!isCollapsed && (
-                    <div
-                      id={`category-${categoryKey}`}
-                      className="space-y-2"
-                    >
+                    <div className="space-y-3">
                       {categoryTasks.length === 0 ? (
                         <p className="text-xs text-text-secondary italic py-2 pl-7">
                           {searchTerm
@@ -286,7 +258,6 @@ export default function TarefasPage() {
         )}
       </main>
 
-      {/* Modal de formulário */}
       {isFormOpen && (
         <TaskForm
           task={selectedTask}

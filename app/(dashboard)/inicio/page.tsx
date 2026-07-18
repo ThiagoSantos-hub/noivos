@@ -1,8 +1,7 @@
 'use client'
 
 /**
- * DashboardPage — tela principal do app (/inicio)
- * Exibe cabeçalho editável, countdown e barra financeira
+ * DashboardPage — tela principal com visual mais premium
  */
 
 import { useCouple } from '@/hooks/useCouple'
@@ -11,112 +10,52 @@ import { CountdownBar } from '@/components/features/CountdownBar'
 import { FinancialBar } from '@/components/features/FinancialBar'
 
 export default function DashboardPage() {
-  const { couple, isLoading, error, updateCoupleData } = useCouple()
+  const { couple, isLoading, error } = useCouple()
 
-  // Estado de carregamento dos dados do casal
   if (isLoading) {
-    return (
-      <div
-        className="flex flex-col gap-4 px-4 pt-6"
-        aria-busy="true"
-        aria-label="Carregando dados do casal"
-      >
-        {/* Skeleton do cabeçalho */}
-        <div className="animate-pulse">
-          <div className="h-8 bg-gray-200 rounded-md w-3/4 mb-2" />
-          <div className="h-4 bg-gray-100 rounded-md w-1/2" />
-        </div>
-
-        {/* Skeleton do countdown */}
-        <div className="animate-pulse bg-white rounded-lg shadow-sm p-4 border border-gray-100">
-          <div className="h-5 bg-gray-200 rounded w-1/3 mb-3" />
-          <div className="h-6 bg-gray-200 rounded w-2/3 mb-3" />
-          <div className="h-3 bg-gray-100 rounded-full mb-3" />
-          <div className="h-10 bg-gray-100 rounded-md" />
-        </div>
-
-        {/* Skeleton do financeiro */}
-        <div className="animate-pulse bg-white rounded-lg shadow-sm p-4 border border-gray-100">
-          <div className="h-5 bg-gray-200 rounded w-1/3 mb-3" />
-          <div className="h-4 bg-gray-100 rounded w-3/4 mb-2" />
-          <div className="h-4 bg-gray-100 rounded w-1/2 mb-3" />
-          <div className="h-3 bg-gray-100 rounded-full mb-3" />
-          <div className="h-10 bg-gray-100 rounded-md" />
-        </div>
-      </div>
-    )
+    return <div className="p-4">Carregando...</div>
   }
 
-  // Estado de erro ao buscar dados
   if (error) {
-    return (
-      <div
-        className="flex flex-col items-center justify-center min-h-[60vh] px-6 text-center"
-        role="alert"
-      >
-        <span className="text-4xl mb-4" aria-hidden="true">
-          😕
-        </span>
-        <h2 className="text-lg font-semibold text-text-primary mb-2">
-          Não foi possível carregar os dados
-        </h2>
-        <p className="text-sm text-text-secondary mb-4">{error}</p>
-        <button
-          onClick={() => window.location.reload()}
-          className="btn-primary text-sm px-6 py-2"
-        >
-          Tentar novamente
-        </button>
-      </div>
-    )
+    return <div className="p-4 text-red-500">Erro: {error}</div>
   }
 
-  // Dados do casal não encontrados (casal não criado ainda)
   if (!couple) {
-    return (
-      <div
-        className="flex flex-col items-center justify-center min-h-[60vh] px-6 text-center"
-        role="status"
-      >
-        <span className="text-4xl mb-4" aria-hidden="true">
-          💍
-        </span>
-        <h2 className="text-lg font-semibold text-text-primary mb-2">
-          Bem-vindo ao Noivos!
-        </h2>
-        <p className="text-sm text-text-secondary">
-          Complete o cadastro do casal para começar a planejar.
-        </p>
-      </div>
-    )
+    return <div className="p-4">Complete o cadastro.</div>
   }
 
   return (
     <>
-      {/* Metadados da página */}
       <title>Início — Noivos</title>
 
-      {/* Cabeçalho com nome editável */}
-      <CoupleHeader couple={couple} onUpdate={updateCoupleData} />
+      <CoupleHeader couple={couple} />
 
-      {/* Barra de countdown — só exibe se tiver data do casamento */}
+      {/* Boas-vindas com sombra forte */}
+      <section className="mx-3 mb-4 p-4 bg-white rounded-2xl shadow-2xl border border-gray-200">
+        <div className="text-center">
+          <p className="text-sm font-medium text-primary-dark mb-1.5">
+            Que esse tempo de planejamento seja repleto de amor, sonhos e momentos inesquecíveis.
+          </p>
+          <p className="text-xs italic text-text-secondary">
+            "O amor é paciente, o amor é bondoso. [...] O amor nunca falha."
+            <span className="block mt-0.5 not-italic text-[10px]">— 1 Coríntios 13:4,8</span>
+          </p>
+        </div>
+      </section>
+
       {couple.data_casamento ? (
         <CountdownBar
           weddingDate={couple.data_casamento}
           createdAt={couple.created_at}
         />
       ) : (
-        <section
-          aria-label="Data do casamento não definida"
-          className="mx-4 mb-4 p-4 bg-primary-light rounded-lg border border-blue-200"
-        >
+        <section className="mx-3 mb-4 p-4 bg-primary-light rounded-2xl border border-blue-200 shadow-md">
           <p className="text-sm text-primary-dark font-medium">
-            ⏳ Defina a data do casamento para ver o countdown!
+            ⏳ Defina a data do casamento para ver a contagem regressiva!
           </p>
         </section>
       )}
 
-      {/* Barra financeira */}
       <FinancialBar
         totalBudget={couple.total_budget ?? 0}
         totalPaid={couple.total_paid ?? 0}

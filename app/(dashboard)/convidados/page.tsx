@@ -1,193 +1,273 @@
 'use client'
 
 /**
- * ConvidadosPage — Tela de gestão de convidados
+ * Página de Convidados - limpa
  */
 
-import { useState } from 'react'
-import { Plus, Search, ChevronDown, ChevronUp } from 'lucide-react'
-import { useGuests } from '@/hooks/useGuests'
+import { useState, useEffect } from 'react'
 import { useCouple } from '@/hooks/useCouple'
-import { GuestCard, GuestSummary, GuestForm } from '@/components/features'
-import type { Guest, GuestGroup, GuestCreatePayload } from '@/types/guest.types'
+import { supabase } from '@/services/supabase'
+import { Pencil, Check, X, UserPlus } from 'lucide-react'
 
-const GROUPS_CONFIG: Record<GuestGroup, { label: string; icon: string }> = {
-  bride_family: { label: 'Família da Noiva', icon: '👰' },
-  groom_family: { label: 'Família do Noivo', icon: '🤵' },
-  groomsmen_bridesmaids: { label: 'Padrinhos & Madrinhas', icon: '💍' },
+const GROUP_ORDER = [
+  'familia_noiva',
+  'familia_noivo',
+  'convidado_noiva',
+  'convidado_noivo',
+  'padrinho',
+  'madrinha',
+  'daminhas_pajens',
+  'profissionais_contratados',
+]
+
+const GROUP_LABELS: Record<string, string> = {
+  familia_noiva: 'Família da Noiva',
+  familia_noivo: 'Família do Noivo',
+  convidado_noiva: 'Convidados da Noiva',
+  convidado_noivo: 'Convidados do Noivo',
+  padrinho: 'Padrinhos do Noivo',
+  madrinha: 'Madrinhas da Noiva',
+  daminhas_pajens: 'Daminhas e Pajens',
+  profissionais_contratados: 'Profissionais Contratados',
+}
+
+const GROUP_ICONS: Record<string, string> = {
+  familia_noiva: '👰‍♀️',
+  familia_noivo: '🤵‍♂️',
+  convidado_noiva: '👰‍♀️',
+  convidado_noivo: '🤵‍♂️',
+  padrinho: '🤵‍♂️',
+  madrinha: '👰‍♀️',
+  daminhas_pajens: '👧👦',
+  profissionais_contratados: '💼',
 }
 
 export default function ConvidadosPage() {
-  const { guests, isLoading, error, addGuest, editGuest, removeGuest } = useGuests()
-  const { couple, updateCoupleData } = useCouple()
-  
-  const [isFormOpen, setIsFormOpen] = useState(false)
-  const [selectedGuest, setSelectedGuest] = useState<Guest | undefined>(undefined)
-  const [searchTerm, setSearchTerm] = useState('')
-  const [collapsedGroups, setCollapsedGroups] = useState<Record<string, boolean>>({})
+  const { couple, isLoading: coupleLoading, updateCoupleData } = useCouple()
+  const [guests, setGuests] = useState<any[]>([])
+  const [loading, setLoading] = useState(true)
+  const [showForm, setShowForm] = useState(false)
+  const [selectedGroup, setSelectedGroup] = useState('')
+  const [newGuestName, setNewGuestName] = useState('')
+  const [editingTotal, setEditingTotal] = useState(false)
+  const [expectedTotal, setExpectedTotal] = useState('')
 
-  const filteredGuests = guests.filter((g) =>
-    g.name.toLowerCase().includes(searchTerm.toLowerCase())
-  )
+  const loadGuests = async () => {
+    if (!couple?.id) return
+    const { data, error } = await supabase
+      .from('guests')
+      .select('*')
+      .eq('couple_id', couple.id)
+      .order('created_at', { ascending: true })
 
-  const guestsByGroup = filteredGuests.reduce((acc, guest) => {
-    if (!acc[guest.group]) acc[guest.group] = []
-    acc[guest.group].push(guest)
-    return acc
-  }, {} as Record<GuestGroup, Guest[]>)
-
-  const toggleGroup = (group: string) => {
-    setCollapsedGroups(prev => ({ ...prev, [group]: !prev[group] }))
+    if (!error && data) setGuests(data)
+    setLoading(false)
   }
 
-  const handleAddClick = () => {
-    setSelectedGuest(undefined)
-    setIsFormOpen(true)
+  useEffect(() => {
+    if (couple?.id) {
+      loadGuests()
+      setExpectedTotal((couple.expected_guests ?? 0).toString())
+    }
+  }, [couple?.id])
+
+  if (coupleLoading || loading || !couple) return <div className="p-4">Carregando...</div>
+
+  const confirmedCount = guests.filter(g => g.confirmed).length
+  const pendingCount = guests.length - confirmedCount
+  const expectedGuests = couple.expected_guests ?? 0
+
+  const groupedGuests: Record<string, any[]> = {
+    familia_noiva: guests.filter(g => g.group_type === 'familia_noiva'),
+    familia_noivo: guests.filter(g => g.group_type === 'familia_noivo'),
+    convidado_noiva: guests.filter(g => g.group_type === 'convidado_noiva'),
+    convidado_noivo: guests.filter(g => g.group_type === 'convidado_noivo'),
+    padrinho: guests.filter(g => g.group_type === 'padrinho'),
+    madrinha: guests.filter(g => g.group_type === 'madrinha'),
+    daminhas_pajens: guests.filter(g => g.group_type === 'daminhas_pajens'),
+    profissionais_contratados: guests.filter(g => g.group_type === 'profissionais_contratados'),
   }
 
-  const handleGuestClick = (guest: Guest) => {
-    setSelectedGuest(guest)
-    setIsFormOpen(true)
+  const saveExpectedTotal = async () => {
+    const newTotal = parseInt(expectedTotal)
+    if (isNaN(newTotal) || newTotal < 0) return
+    await updateCoupleData({ expected_guests: newTotal })
+    setEditingTotal(false)
   }
 
-  const handleSubmit = async (data: GuestCreatePayload) => {
-    if (selectedGuest) {
-      await editGuest(selectedGuest.id, data)
+  const addGuest = async () => {
+    if (!newGuestName.trim() || !selectedGroup) return
+
+    const { error } = await supabase.from('guests').insert({
+      couple_id: couple.id,
+      name: newGuestName.trim(),
+      group_type: selectedGroup,
+      confirmed: false,
+    })
+
+    if (!error) {
+      setNewGuestName('')
+      setShowForm(false)
+      setSelectedGroup('')
+      await loadGuests()
     } else {
-      await addGuest(data)
+      alert('Erro ao adicionar. Verifique se o SQL de permissão foi rodado.')
     }
   }
 
-  const handleUpdateExpectedTotal = async (total: number) => {
-    if (couple) {
-      await updateCoupleData({ expected_guests: total })
-    }
+  const toggleConfirm = async (guest: any) => {
+    const { error } = await supabase
+      .from('guests')
+      .update({ confirmed: !guest.confirmed })
+      .eq('id', guest.id)
+
+    if (!error) await loadGuests()
+  }
+
+  const deleteGuest = async (id: string) => {
+    if (!confirm('Remover este convidado?')) return
+    await supabase.from('guests').delete().eq('id', id)
+    await loadGuests()
   }
 
   return (
-    <div className="flex flex-col min-h-full pb-20">
-      <title>Convidados — Noivos</title>
+    <div className="p-4 max-w-3xl mx-auto">
+      <div className="flex items-center gap-2 mb-6">
+        <h1 className="text-2xl font-bold">Convidados</h1>
+      </div>
 
-      {/* Header fixo */}
-      <header className="sticky top-0 z-40 bg-white px-4 pt-6 pb-4 shadow-sm">
-        <div className="flex justify-between items-center mb-4">
-          <h1 className="text-2xl font-bold text-text-primary">
-            Convidados 👥
-          </h1>
-          <button
-            onClick={handleAddClick}
-            className="
-              w-10 h-10 bg-success-DEFAULT text-white rounded-full
-              flex items-center justify-center shadow-md
-              hover:bg-success-dark active:scale-95 transition-all
-            "
-            aria-label="Adicionar convidado"
-          >
-            <Plus size={24} />
-          </button>
+      {/* Total de Convidados - Editável */}
+      <div className="bg-white p-5 rounded-2xl shadow-2xl border mb-6">
+        <div className="flex justify-between items-start">
+          <div>
+            <p className="text-sm text-text-secondary">TOTAL DE CONVIDADOS</p>
+            {!editingTotal ? (
+              <div className="flex items-center gap-2">
+                <p className="text-3xl font-bold">{confirmedCount} / {expectedGuests}</p>
+                <button onClick={() => setEditingTotal(true)} className="text-gray-400 hover:text-gray-600">
+                  <Pencil size={18} />
+                </button>
+              </div>
+            ) : (
+              <div className="flex gap-2 mt-1">
+                <input
+                  type="number"
+                  value={expectedTotal}
+                  onChange={(e) => setExpectedTotal(e.target.value)}
+                  className="w-24 border rounded-lg px-2 py-1 text-xl font-bold"
+                  autoFocus
+                />
+                <button onClick={saveExpectedTotal} className="p-2 text-green-600"><Check size={20} /></button>
+                <button onClick={() => setEditingTotal(false)} className="p-2 text-red-600"><X size={20} /></button>
+              </div>
+            )}
+            <p className="text-xs text-text-secondary mt-1">
+              {confirmedCount} confirmados de {expectedGuests} esperados
+            </p>
+          </div>
         </div>
 
-        {/* Busca */}
-        <div className="relative">
-          <Search
-            size={18}
-            className="absolute left-3 top-1/2 -translate-y-1/2 text-text-secondary"
-          />
-          <input
-            type="text"
-            placeholder="Buscar convidado pelo nome..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="
-              w-full pl-10 pr-4 py-2 bg-gray-50 border border-gray-200
-              rounded-full text-sm outline-none focus:border-primary-DEFAULT
-              focus:ring-2 focus:ring-primary-light transition-all
-            "
-          />
+        <div className="grid grid-cols-2 gap-3 mt-4 text-center">
+          <div>
+            <p className="text-2xl font-bold text-green-600">{confirmedCount}</p>
+            <p className="text-xs text-text-secondary">CONFIRMADOS</p>
+          </div>
+          <div>
+            <p className="text-2xl font-bold text-yellow-600">{pendingCount}</p>
+            <p className="text-xs text-text-secondary">PENDENTES</p>
+          </div>
         </div>
-      </header>
+      </div>
 
-      {/* Conteúdo */}
-      <main className="flex-1 px-4 pt-4">
-        {isLoading ? (
-          <div className="space-y-4">
-            <div className="animate-pulse bg-white h-32 rounded-xl shadow-sm border border-gray-100" />
-            {[1, 2, 3].map((i) => (
-              <div key={i} className="animate-pulse bg-white h-16 rounded-lg shadow-sm border border-gray-100" />
-            ))}
+      {/* Grupos na ordem correta */}
+      {GROUP_ORDER.map((key) => {
+        const label = GROUP_LABELS[key]
+        const groupGuests = groupedGuests[key] || []
+
+        return (
+          <div key={key} className="bg-white rounded-2xl shadow border mb-4 overflow-hidden">
+            <div className="px-4 py-3 bg-gray-50 flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <span className="text-xl">{GROUP_ICONS[key]}</span>
+                <span className="font-semibold">{label}</span>
+                <span className="text-sm text-text-secondary">({groupGuests.length})</span>
+              </div>
+              <button
+                onClick={() => {
+                  setSelectedGroup(key)
+                  setShowForm(true)
+                }}
+                className="text-blue-600 hover:text-blue-700 flex items-center gap-1 text-sm"
+              >
+                <UserPlus size={16} /> Adicionar
+              </button>
+            </div>
+
+            <div className="divide-y">
+              {groupGuests.length === 0 ? (
+                <div className="px-4 py-4 text-sm text-text-secondary">Nenhum convidado neste grupo.</div>
+              ) : (
+                groupGuests.map((guest) => (
+                  <div key={guest.id} className="px-4 py-3 flex items-center justify-between hover:bg-gray-50">
+                    <span className={guest.confirmed ? 'line-through text-gray-400' : ''}>{guest.name}</span>
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => toggleConfirm(guest)}
+                        className={`px-3 py-1 text-xs rounded-full font-medium ${guest.confirmed 
+                          ? 'bg-green-100 text-green-700' 
+                          : 'bg-yellow-100 text-yellow-700 hover:bg-yellow-200'}`}
+                      >
+                        {guest.confirmed ? 'Confirmado' : 'Confirmar'}
+                      </button>
+                      <button onClick={() => deleteGuest(guest.id)} className="text-red-500 hover:text-red-600">
+                        <X size={16} />
+                      </button>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
           </div>
-        ) : error ? (
-          <div className="py-12 text-center">
-            <p className="text-danger mb-4">{error}</p>
-            <button onClick={() => window.location.reload()} className="btn-primary">
-              Tentar novamente
-            </button>
-          </div>
-        ) : (
-          <>
-            <GuestSummary
-              guests={guests}
-              expectedTotal={couple?.expected_guests || 0}
-              onUpdateExpectedTotal={handleUpdateExpectedTotal}
+        )
+      })}
+
+      {/* Modal Centralizado */}
+      {showForm && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white w-full max-w-md rounded-2xl p-6 shadow-xl">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="font-semibold text-lg">Adicionar Convidado</h3>
+              <button onClick={() => { setShowForm(false); setSelectedGroup('') }}>
+                <X size={22} />
+              </button>
+            </div>
+
+            <input
+              type="text"
+              placeholder="Nome do convidado"
+              value={newGuestName}
+              onChange={(e) => setNewGuestName(e.target.value)}
+              className="w-full border rounded-lg px-4 py-3 mb-4 text-lg"
+              autoFocus
             />
 
-            <div className="space-y-6">
-              {(Object.keys(GROUPS_CONFIG) as GuestGroup[]).map((groupKey) => {
-                const groupGuests = guestsByGroup[groupKey] || []
-                const isCollapsed = collapsedGroups[groupKey]
-                const config = GROUPS_CONFIG[groupKey]
-
-                return (
-                  <section key={groupKey} className="space-y-3">
-                    <button
-                      onClick={() => toggleGroup(groupKey)}
-                      className="w-full flex justify-between items-center text-primary-dark"
-                    >
-                      <div className="flex items-center gap-2">
-                        <span className="text-lg">{config.icon}</span>
-                        <h3 className="font-bold text-sm uppercase tracking-wider">
-                          {config.label}
-                          <span className="ml-2 text-text-secondary font-normal lowercase">
-                            ({groupGuests.length})
-                          </span>
-                        </h3>
-                      </div>
-                      {isCollapsed ? <ChevronDown size={20} /> : <ChevronUp size={20} />}
-                    </button>
-
-                    {!isCollapsed && (
-                      <div className="space-y-2">
-                        {groupGuests.length === 0 ? (
-                          <p className="text-xs text-text-secondary italic py-2 pl-7">
-                            Nenhum convidado neste grupo.
-                          </p>
-                        ) : (
-                          groupGuests.map((guest) => (
-                            <GuestCard
-                              key={guest.id}
-                              guest={guest}
-                              onClick={handleGuestClick}
-                            />
-                          ))
-                        )}
-                      </div>
-                    )}
-                  </section>
-                )
-              })}
+            <div className="flex gap-3">
+              <button
+                onClick={addGuest}
+                disabled={!newGuestName.trim()}
+                className="flex-1 bg-green-600 text-white py-3 rounded-xl font-semibold disabled:opacity-50"
+              >
+                Adicionar
+              </button>
+              <button
+                onClick={() => { setShowForm(false); setSelectedGroup('') }}
+                className="px-6 py-3 bg-gray-200 rounded-xl font-medium"
+              >
+                Cancelar
+              </button>
             </div>
-          </>
-        )}
-      </main>
-
-      {/* Formulário Modal */}
-      {isFormOpen && (
-        <GuestForm
-          guest={selectedGuest}
-          onSubmit={handleSubmit}
-          onDelete={selectedGuest ? (id) => removeGuest(id) : undefined}
-          onClose={() => setIsFormOpen(false)}
-        />
+          </div>
+        </div>
       )}
     </div>
   )

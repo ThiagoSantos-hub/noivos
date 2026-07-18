@@ -1,13 +1,11 @@
 'use client'
 
 /**
- * TaskForm — formulário modal para criar ou editar uma tarefa.
- * Campos: título, data limite, responsável, prioridade, observações, status, categoria.
+ * TaskForm — bem compacto e centralizado (sem scroll no celular)
  */
 
 import { useState } from 'react'
 import { X, Trash2, Loader2 } from 'lucide-react'
-import { Button, Input } from '@/components/ui'
 import type {
   Task,
   TaskCategory,
@@ -38,6 +36,7 @@ const PRIORITY_OPTIONS: { value: TaskPriority; label: string; className: string 
 const ASSIGNEE_OPTIONS: { value: TaskAssignee; label: string }[] = [
   { value: 'bride', label: 'Noiva' },
   { value: 'groom', label: 'Noivo' },
+  { value: 'both', label: 'Ambos' },
 ]
 
 const STATUS_OPTIONS: { value: TaskStatus; label: string }[] = [
@@ -104,111 +103,108 @@ export function TaskForm({ task, onSubmit, onDelete, onClose }: ITaskFormProps) 
   }
 
   return (
-    <div className="fixed inset-0 z-[60] flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/50 backdrop-blur-sm">
-      <div className="bg-white w-full max-w-md rounded-t-2xl sm:rounded-2xl shadow-xl overflow-hidden flex flex-col max-h-[90vh]">
+    <div className="fixed inset-0 z-[60] flex items-center justify-center p-3 bg-black/50">
+      <div className="bg-white w-full max-w-sm rounded-2xl shadow-2xl overflow-hidden">
 
         {/* Header */}
-        <div className="px-4 py-4 border-b border-gray-100 flex justify-between items-center bg-white sticky top-0 z-10">
-          <h2 className="text-lg font-bold text-primary-dark">
+        <div className="px-4 py-2.5 border-b border-gray-100 flex justify-between items-center">
+          <h2 className="text-sm font-bold text-primary-dark">
             {task ? 'Editar Tarefa' : 'Nova Tarefa'}
           </h2>
           <button
             type="button"
             onClick={onClose}
-            className="p-2 text-text-secondary hover:bg-gray-100 rounded-full transition-colors"
-            aria-label="Fechar formulário"
+            className="p-1 text-text-secondary hover:bg-gray-100 rounded-full"
           >
-            <X size={20} />
+            <X size={18} />
           </button>
         </div>
 
-        {/* Formulário */}
-        <form onSubmit={handleSubmit} className="p-4 space-y-4 overflow-y-auto">
+        {/* Formulário bem compacto */}
+        <form onSubmit={handleSubmit} className="p-3 space-y-2.5">
 
-          {/* Mensagem de erro */}
           {formError && (
-            <div className="p-3 bg-red-50 text-danger text-sm rounded-md border border-red-100">
+            <div className="p-2 bg-red-50 text-red-600 text-xs rounded-md">
               {formError}
             </div>
           )}
 
           {/* Título */}
-          <Input
-            label="Título da tarefa *"
-            placeholder="Ex: Confirmar cardápio com o buffet"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            required
-          />
-
-          {/* Categoria */}
-          <div className="space-y-1.5">
-            <label className="text-sm font-semibold text-text-primary">
-              Categoria *
-            </label>
-            <div className="flex gap-2">
-              {CATEGORY_OPTIONS.map((opt) => (
-                <button
-                  key={opt.value}
-                  type="button"
-                  onClick={() => setCategory(opt.value)}
-                  className={`
-                    flex-1 py-2 px-3 rounded-md border text-sm font-semibold transition-all
-                    ${category === opt.value
-                      ? 'bg-primary-dark text-white border-primary-dark'
-                      : 'bg-white text-text-secondary border-gray-300 hover:border-primary-DEFAULT'
-                    }
-                  `}
-                >
-                  {opt.label}
-                </button>
-              ))}
-            </div>
+          <div className="space-y-1">
+            <label className="text-xs font-semibold text-text-primary">Título *</label>
+            <input
+              type="text"
+              placeholder="Ex: Confirmar cardápio"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              required
+              className="w-full px-3 py-2 rounded-lg border border-gray-300 text-sm outline-none focus:border-green-500"
+            />
           </div>
 
-          {/* Status */}
-          <div className="space-y-1.5">
-            <label className="text-sm font-semibold text-text-primary">
-              Status *
-            </label>
-            <div className="flex gap-2">
-              {STATUS_OPTIONS.map((opt) => (
-                <button
-                  key={opt.value}
-                  type="button"
-                  onClick={() => setStatus(opt.value)}
-                  className={`
-                    flex-1 py-2 px-3 rounded-md border text-sm font-semibold transition-all
-                    ${status === opt.value
-                      ? opt.value === 'done'
-                        ? 'bg-success-DEFAULT text-white border-success-DEFAULT'
-                        : 'bg-primary-dark text-white border-primary-dark'
-                      : 'bg-white text-text-secondary border-gray-300 hover:border-primary-DEFAULT'
-                    }
-                  `}
-                >
-                  {opt.label}
-                </button>
-              ))}
+          {/* Categoria + Status */}
+          <div className="grid grid-cols-2 gap-2">
+            <div className="space-y-1">
+              <label className="text-xs font-semibold text-text-primary">Categoria</label>
+              <div className="flex gap-1">
+                {CATEGORY_OPTIONS.map((opt) => (
+                  <button
+                    key={opt.value}
+                    type="button"
+                    onClick={() => setCategory(opt.value)}
+                    className={`
+                      flex-1 py-1.5 rounded-lg border text-[11px] font-semibold
+                      ${category === opt.value
+                        ? 'bg-blue-700 text-white border-blue-700'
+                        : 'bg-white text-text-secondary border-gray-300'
+                      }
+                    `}
+                  >
+                    {opt.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="space-y-1">
+              <label className="text-xs font-semibold text-text-primary">Status</label>
+              <div className="flex gap-1">
+                {STATUS_OPTIONS.map((opt) => (
+                  <button
+                    key={opt.value}
+                    type="button"
+                    onClick={() => setStatus(opt.value)}
+                    className={`
+                      flex-1 py-1.5 rounded-lg border text-[11px] font-semibold
+                      ${status === opt.value
+                        ? opt.value === 'done'
+                          ? 'bg-green-600 text-white border-green-600'
+                          : 'bg-blue-700 text-white border-blue-700'
+                        : 'bg-white text-text-secondary border-gray-300'
+                      }
+                    `}
+                  >
+                    {opt.label}
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
 
           {/* Prioridade */}
-          <div className="space-y-1.5">
-            <label className="text-sm font-semibold text-text-primary">
-              Prioridade
-            </label>
-            <div className="flex gap-2">
+          <div className="space-y-1">
+            <label className="text-xs font-semibold text-text-primary">Prioridade</label>
+            <div className="flex gap-1">
               {PRIORITY_OPTIONS.map((opt) => (
                 <button
                   key={opt.value}
                   type="button"
                   onClick={() => setPriority(priority === opt.value ? '' : opt.value)}
                   className={`
-                    flex-1 py-2 px-3 rounded-md border text-xs font-semibold transition-all
+                    flex-1 py-1.5 rounded-lg border text-[11px] font-semibold
                     ${priority === opt.value
                       ? opt.className
-                      : 'bg-white text-text-secondary border-gray-300 hover:border-gray-400'
+                      : 'bg-white text-text-secondary border-gray-300'
                     }
                   `}
                 >
@@ -219,21 +215,19 @@ export function TaskForm({ task, onSubmit, onDelete, onClose }: ITaskFormProps) 
           </div>
 
           {/* Responsável */}
-          <div className="space-y-1.5">
-            <label className="text-sm font-semibold text-text-primary">
-              Responsável
-            </label>
-            <div className="flex gap-2">
+          <div className="space-y-1">
+            <label className="text-xs font-semibold text-text-primary">Responsável</label>
+            <div className="flex gap-1">
               {ASSIGNEE_OPTIONS.map((opt) => (
                 <button
                   key={opt.value}
                   type="button"
                   onClick={() => setAssignee(assignee === opt.value ? '' : opt.value)}
                   className={`
-                    flex-1 py-2 px-3 rounded-md border text-sm font-semibold transition-all
+                    flex-1 py-1.5 rounded-lg border text-[11px] font-semibold
                     ${assignee === opt.value
-                      ? 'bg-primary-dark text-white border-primary-dark'
-                      : 'bg-white text-text-secondary border-gray-300 hover:border-primary-DEFAULT'
+                      ? 'bg-blue-700 text-white border-blue-700'
+                      : 'bg-white text-text-secondary border-gray-300'
                     }
                   `}
                 >
@@ -244,60 +238,46 @@ export function TaskForm({ task, onSubmit, onDelete, onClose }: ITaskFormProps) 
           </div>
 
           {/* Data limite */}
-          <Input
-            label="Data limite"
-            type="date"
-            value={dueDate}
-            onChange={(e) => setDueDate(e.target.value)}
-          />
+          <div className="space-y-1">
+            <label className="text-xs font-semibold text-text-primary">Data limite</label>
+            <input
+              type="date"
+              value={dueDate}
+              onChange={(e) => setDueDate(e.target.value)}
+              className="w-full px-3 py-2 rounded-lg border border-gray-300 text-sm outline-none focus:border-green-500"
+            />
+          </div>
 
           {/* Observações */}
-          <div className="space-y-1.5">
-            <label
-              htmlFor="task-notes"
-              className="text-sm font-semibold text-text-primary"
-            >
-              Observações
-            </label>
-            <textarea
-              id="task-notes"
+          <div className="space-y-1">
+            <label className="text-xs font-semibold text-text-primary">Observações</label>
+            <input
+              type="text"
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
-              placeholder="Detalhes adicionais, links, contatos..."
-              rows={3}
-              className="
-                w-full px-4 py-2 rounded-md border border-gray-300
-                focus:border-primary-DEFAULT focus:ring-2 focus:ring-primary-light
-                outline-none transition-all text-sm text-text-primary
-                placeholder:text-text-secondary resize-none
-              "
+              placeholder="Detalhes..."
+              className="w-full px-3 py-2 rounded-lg border border-gray-300 text-sm outline-none focus:border-green-500"
             />
           </div>
 
           {/* Ações */}
-          <div className="pt-4 flex flex-col gap-3">
-            <Button
-              label={task ? 'Salvar Alterações' : 'Criar Tarefa'}
+          <div className="pt-1 flex flex-col gap-1.5">
+            <button
               type="submit"
-              loading={isSubmitting}
-              disabled={isDeleting}
-              className="w-full"
-            />
+              disabled={isSubmitting || isDeleting}
+              className="w-full py-2.5 bg-green-600 text-white rounded-xl text-sm font-bold shadow-lg disabled:opacity-60"
+            >
+              {isSubmitting ? 'Salvando...' : task ? 'Salvar Alterações' : 'Criar Tarefa'}
+            </button>
 
             {task && (
               <button
                 type="button"
                 onClick={handleDelete}
                 disabled={isSubmitting || isDeleting}
-                className="
-                  flex items-center justify-center gap-2 text-danger text-sm
-                  font-semibold py-2 hover:bg-red-50 rounded-md transition-colors
-                "
+                className="flex items-center justify-center gap-1.5 text-red-600 text-xs font-semibold py-1.5"
               >
-                {isDeleting
-                  ? <Loader2 size={16} className="animate-spin" />
-                  : <Trash2 size={16} />
-                }
+                {isDeleting ? <Loader2 size={14} className="animate-spin" /> : <Trash2 size={14} />}
                 Excluir Tarefa
               </button>
             )}

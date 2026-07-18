@@ -1,31 +1,34 @@
 # ENV.md — Variáveis de Ambiente
 
-> Nunca commitar valores reais em texto puro num repositório público.
-> Valores reais devem ficar em `.env` (local) e nas variáveis de ambiente da plataforma de deploy (Vercel).
-> ⚠️ `SERVICE_ROLE_KEY` e `DATABASE_URL` (senha do banco) **não são expostas por integração automática** — copie manualmente do dashboard do Supabase (Project Settings → API / Database) e cole nos campos indicados abaixo.
+> **Nunca** commitar valores reais em texto puro no repositório.
+> Valores reais devem ficar **somente** em:
+> - `.env` / `.env.local` (local — nunca versionado)
+> - Variáveis de ambiente da Vercel (produção e preview)
+> - Secrets do Notion / gerenciador de senhas do time
+>
+> ⚠️ `SUPABASE_SERVICE_ROLE_KEY` e `DATABASE_URL` **nunca** devem ser commitados. Copie manualmente do dashboard do Supabase.
 
 ---
 
 ## 1. Aplicação Geral
 
 ```env
-NODE_ENV=development | production
-APP_URL=https://seuappdecasamento.com
-API_BASE_URL=https://api.seuappdecasamento.com/v1
+NODE_ENV=development
+APP_URL=http://localhost:3000
+NEXT_PUBLIC_APP_URL=http://localhost:3000
 ```
 
 ---
 
-## 2. Supabase — PRODUÇÃO (main)
+## 2. Supabase — PRODUÇÃO
 
 Projeto: `app-casamento` — região `sa-east-1` (São Paulo)
 
 ```env
-SUPABASE_URL=https://gbmlhrvmkqwelgomxenk.supabase.co
-SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdibWxocnZta3F3ZWxnb214ZW5rIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQwNDYzODMsImV4cCI6MjA5OTYyMjM4M30.MsGPO1ctUlwr1-9QmJMa4Y4CXQQR6OeMLDojdIMKB2E
-SUPABASE_PUBLISHABLE_KEY=sb_publishable_qw3_UJLWwI--eOtI4eeQQg_MkeHUcyX
-SUPABASE_SERVICE_ROLE_KEY=<< copiar manualmente do dashboard: Project Settings → API >>
-DATABASE_URL=<< copiar manualmente do dashboard: Project Settings → Database → Connection string >>
+NEXT_PUBLIC_SUPABASE_URL=https://gbmlhrvmkqwelgomxenk.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=<< cole a anon key do dashboard >>
+SUPABASE_SERVICE_ROLE_KEY=<< cole a service_role key do dashboard >>
+DATABASE_URL=<< connection string do dashboard >>
 ```
 
 ---
@@ -35,16 +38,35 @@ DATABASE_URL=<< copiar manualmente do dashboard: Project Settings → Database �
 Projeto: `app-casamento-staging` — região `sa-east-1` (São Paulo)
 
 ```env
-SUPABASE_URL=https://yqhhznojfmtdhqacehsc.supabase.co
-SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlxaGh6bm9qZm10ZGhxYWNlaHNjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQwNDY1ODMsImV4cCI6MjA5OTYyMjU4M30.p5LctKirkFAfN8VGweMrxeOu0-57OmmEVI5_kU8CI8Y
-SUPABASE_PUBLISHABLE_KEY=sb_publishable_EwhnuAlOWL0-uCHateiAxw_TMZlrPlw
-SUPABASE_SERVICE_ROLE_KEY=<< copiar manualmente do dashboard: Project Settings → API >>
-DATABASE_URL=<< copiar manualmente do dashboard: Project Settings → Database → Connection string >>
+NEXT_PUBLIC_SUPABASE_URL=https://yqhhznojfmtdhqacehsc.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=<< cole a anon key do dashboard >>
+SUPABASE_SERVICE_ROLE_KEY=<< cole a service_role key do dashboard >>
+DATABASE_URL=<< connection string do dashboard >>
 ```
 
 ---
 
-## 4. Autenticação (JWT)
+## 4. E-mail Transacional — Brevo
+
+```env
+BREVO_API_KEY=<< sua chave Brevo >>
+BREVO_SENDER_NAME=Noivos
+BREVO_SENDER_EMAIL=seu-email-verificado@dominio.com
+```
+
+---
+
+## 5. Pagamentos — Asaas (se aplicável)
+
+```env
+ASAAS_API_KEY=<< sua chave Asaas >>
+ASAAS_API_URL=https://www.asaas.com/api/v3
+PLAN_PRICE=9.90
+```
+
+---
+
+## 6. Autenticação (se usar JWT próprio no futuro)
 
 ```env
 JWT_SECRET=
@@ -55,7 +77,7 @@ JWT_REFRESH_EXPIRES_IN=30d
 
 ---
 
-## 5. Notificações Push
+## 7. Notificações Push (futuro)
 
 ```env
 FCM_SERVER_KEY=
@@ -66,84 +88,47 @@ APNS_PRIVATE_KEY=
 
 ---
 
-## 6. IA — Manus IA
+## 8. IA (opcional)
 
 ```env
 MANUS_API_KEY=
-MANUS_API_URL=
-```
-
-## 7. IA — Grok IA
-
-```env
 GROK_API_KEY=
 GROK_API_URL=https://api.x.ai/v1
 ```
 
 ---
 
-## 8. Armazenamento (imagens de fornecedores, trajes, manuais)
+## 9. Armazenamento
 
-> Recomendado usar o próprio Supabase Storage (já incluso no projeto acima), a menos que prefira outro provedor.
+> Preferir Supabase Storage.
 
 ```env
-STORAGE_PROVIDER=supabase | s3 | cloudinary
+STORAGE_PROVIDER=supabase
 STORAGE_BUCKET=
-STORAGE_ACCESS_KEY=
-STORAGE_SECRET_KEY=
-STORAGE_REGION=
 ```
 
 ---
 
-## 9. Mobile (Expo / React Native)
+## 10. Mobile (quando existir)
 
 ```env
-EXPO_PUBLIC_API_URL=
-EXPO_PUBLIC_ENV=development | production
 EXPO_PUBLIC_SUPABASE_URL=
 EXPO_PUBLIC_SUPABASE_ANON_KEY=
-```
-
----
-
-## 10. Deploy (Vercel — Web)
-
-Time: `Thiago-noivos` (`team_wvB1lhYW9E7UmAyPxFFOK9Wg`)
-
-```env
-VERCEL_ENV=development | preview | production
+EXPO_PUBLIC_ENV=development
 ```
 
 ---
 
 ## Checklist de configuração
-- [x] Projeto Supabase de produção criado (`app-casamento`)
-- [x] Projeto Supabase de staging criado (`app-casamento-staging`)
-- [ ] `.env.example` criado no repositório (sem valores reais)
-- [ ] `SUPABASE_SERVICE_ROLE_KEY` e `DATABASE_URL` copiadas manualmente (produção + staging)
-- [ ] Variáveis configuradas no ambiente local (`.env`)
-- [ ] Variáveis configuradas no painel da Vercel (produção e preview/staging)
-- [ ] Chaves reais registradas na página "🔐 Credenciais & Chaves de API" do Notion
+
+- [x] Projeto Supabase de produção criado
+- [x] Projeto Supabase de staging criado
+- [x] `.env.example` criado no repositório (sem valores reais)
+- [ ] `SUPABASE_SERVICE_ROLE_KEY` e `DATABASE_URL` configuradas na Vercel
+- [ ] Variáveis configuradas no ambiente local (`.env.local`)
+- [ ] Variáveis configuradas no painel da Vercel (produção e preview)
+- [ ] Chaves reais registradas apenas no gerenciador de segredos / Notion privado
 
 ---
 
-*Última atualização: gerado a partir da página "APP DE CASAMENTO — VISÃO COMPLETA" no Notion + integração ativa com Supabase e Vercel.*
-
----
-
-## 11. E-mail Transacional — Brevo
-
-```env
-BREVO_API_KEY=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
-BREVO_SENDER_NAME=Noivos
-BREVO_SENDER_EMAIL=digitalalpha24@gmail.com
-```
-
-143	---
-144	
-146	
-147	```env
-150	PLAN_PRICE=9.90
-151	```
-152	
+*Última atualização: 17/07/2026 | Projeto: Noivos | Limpeza de segurança*

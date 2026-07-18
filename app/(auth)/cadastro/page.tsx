@@ -12,6 +12,58 @@ import { ProgressBar } from '@/components/ui/ProgressBar'
 import { OnboardingForm } from '@/components/features/OnboardingForm'
 import { supabase } from '@/services/supabase'
 
+function getAuthErrorMessage(error: unknown, context: string): string {
+  if (!error) return `${context}: erro desconhecido`
+
+  if (typeof error === 'object' && error !== null) {
+    const authError = error as {
+      message?: string
+      error_description?: string
+      status?: number
+      code?: string
+    }
+
+    const raw =
+      authError.message ||
+      authError.error_description ||
+      ''
+
+    const lower = raw.toLowerCase()
+
+    if (
+      lower.includes('already registered') ||
+      lower.includes('user already') ||
+      lower.includes('email address is already')
+    ) {
+      return 'Este email já está cadastrado. Tente fazer login ou use outro email.'
+    }
+
+    if (lower.includes('password') && (lower.includes('weak') || lower.includes('least'))) {
+      return 'A senha é muito fraca. Use no mínimo 6 caracteres.'
+    }
+
+    if (lower.includes('invalid email')) {
+      return 'Email inválido.'
+    }
+
+    if (lower.includes('rate limit') || lower.includes('too many')) {
+      return 'Muitas tentativas. Aguarde alguns minutos e tente novamente.'
+    }
+
+    if (raw.trim()) {
+      return `${context}: ${raw}`
+    }
+
+    return `${context}: falha na autenticação (status ${authError.status ?? 'desconhecido'}, code ${authError.code ?? 'n/a'}). Verifique se o email já existe no Supabase ou se as chaves estão corretas.`
+  }
+
+  if (error instanceof Error && error.message) {
+    return `${context}: ${error.message}`
+  }
+
+  return `${context}: erro inesperado`
+}
+
 export default function OnboardingPage() {
   const [progress, setProgress] = useState(0)
   const [error, setError] = useState<string>('')
@@ -32,47 +84,71 @@ export default function OnboardingPage() {
     setIsLoading(true)
 
     try {
+      const password = data.password || ''
+
+      if (password.length < 6) {
+        throw new Error('A senha deve ter no mínimo 6 caracteres.')
+      }
+
       // 1. Criar conta da noiva no Supabase Auth
       console.log('Iniciando cadastro da noiva...', { email: data.email_noiva })
       const { data: authDataNoiva, error: authErrorNoiva } = await supabase.auth.signUp({
-        email: data.email_noiva,
-        password: data.password || '',
+        email: data.email_noiva.trim().toLowerCase(),
+        password,
+        options: {
+          data: {
+            full_name: data.nome_noiva,
+            role: 'bride',
+          },
+        },
       })
 
       if (authErrorNoiva) {
-        console.error('Falha no Supabase Auth (Noiva):', authErrorNoiva)
-        throw new Error(`Erro ao criar conta da noiva: ${authErrorNoiva.message}`)
+        throw new Error(getAuthErrorMessage(authErrorNoiva, 'Erro ao criar conta da noiva'))
       }
-      console.log('Conta da noiva criada com sucesso:', authDataNoiva.user?.id)
-      if (!authDataNoiva.user) throw new Error('Falha ao criar usuário (noiva)')
+
+      if (!authDataNoiva.user) {
+        throw new Error(
+          'Falha ao criar usuário (noiva). O email pode já existir ou a confirmação de email está ativa no Supabase.'
+        )
+      }
 
       setProgress(30)
 
       // 2. Criar conta do noivo no Supabase Auth
       console.log('Iniciando cadastro do noivo...', { email: data.email_noivo })
       const { data: authDataNoivo, error: authErrorNoivo } = await supabase.auth.signUp({
-        email: data.email_noivo,
-        password: data.password || '',
+        email: data.email_noivo.trim().toLowerCase(),
+        password,
+        options: {
+          data: {
+            full_name: data.nome_noivo,
+            role: 'groom',
+          },
+        },
       })
 
       if (authErrorNoivo) {
-        console.error('Falha no Supabase Auth (Noivo):', authErrorNoivo)
-        throw new Error(`Erro ao criar conta do noivo: ${authErrorNoivo.message}`)
+        throw new Error(getAuthErrorMessage(authErrorNoivo, 'Erro ao criar conta do noivo'))
       }
-      console.log('Conta do noivo criada com sucesso:', authDataNoivo.user?.id)
-      if (!authDataNoivo.user) throw new Error('Falha ao criar usuário (noivo)')
+
+      if (!authDataNoivo.user) {
+        throw new Error(
+          'Falha ao criar usuário (noivo). O email pode já existir ou a confirmação de email está ativa no Supabase.'
+        )
+      }
 
       setProgress(40)
 
-      // 3. Inserir dados na tabela `couples` via API (usando SERVICE_ROLE_KEY no servidor)
+      // 3. Inserir dados na tabela `couples` via API (SERVICE_ROLE_KEY no servidor)
       const registerResponse = await fetch('/api/auth/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           nome_noiva: data.nome_noiva,
           nome_noivo: data.nome_noivo,
-          email_noiva: data.email_noiva,
-          email_noivo: data.email_noivo,
+          email_noiva: data.email_noiva.trim().toLowerCase(),
+          email_noivo: data.email_noivo.trim().toLowerCase(),
           data_casamento: data.data_casamento,
           orcamento_total: data.orcamento_total,
           noiva_user_id: authDataNoiva.user.id,
@@ -88,13 +164,16 @@ export default function OnboardingPage() {
 
       setProgress(70)
 
-      // 4. Disparar e-mails de boas-vindas via Brevo
-      // Não bloqueia o fluxo principal em caso de erro no e-mail
+      // 4. E-mails de boas-vindas (não bloqueia o fluxo)
       try {
         const emailResponse = await fetch('/api/send-welcome-email', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(data),
+          body: JSON.stringify({
+            ...data,
+            email_noiva: data.email_noiva.trim().toLowerCase(),
+            email_noivo: data.email_noivo.trim().toLowerCase(),
+          }),
         })
 
         if (!emailResponse.ok) {
@@ -110,16 +189,23 @@ export default function OnboardingPage() {
         })
       }
 
+      // 5. Limpa sessão residual do signUp
+      await supabase.auth.signOut()
+
       setProgress(100)
       setIsSuccess(true)
 
     } catch (err) {
       setProgress(0)
-      setError(
+      const message =
         err instanceof Error
           ? err.message
           : 'Erro ao criar conta. Tente novamente.'
-      )
+
+      setError(message)
+      await supabase.auth.signOut().catch(() => {})
+
+      // Relança para o OnboardingForm não mostrar "sucesso" falso
       throw err
     } finally {
       setIsLoading(false)
@@ -128,14 +214,11 @@ export default function OnboardingPage() {
 
   return (
     <div className="h-screen flex flex-col overflow-y-auto" style={{ backgroundColor: '#FFFFFF' }}>
-      {/* Barra de Progresso */}
       {!isSuccess && <ProgressBar progress={progress} />}
 
-      {/* Conteúdo Principal */}
       <div className="flex-1 flex flex-col items-center px-6 py-8 pt-16">
         <div className="w-full max-w-md">
           {isSuccess ? (
-            /* Tela de Sucesso Pós-Cadastro */
             <div className="text-center animate-in fade-in zoom-in duration-500">
               <div className="flex justify-center mb-6">
                 <div className="relative w-[120px] h-[120px]">
@@ -179,9 +262,7 @@ export default function OnboardingPage() {
               </a>
             </div>
           ) : (
-            /* Formulário de Cadastro */
             <>
-              {/* Cabeçalho */}
               <div className="mb-8 text-center flex flex-col items-center">
                 <div className="mb-0">
                   <div className="relative w-[80px] h-[80px] md:w-[120px] md:h-[120px]">
@@ -202,7 +283,6 @@ export default function OnboardingPage() {
                 </p>
               </div>
 
-              {/* Formulário */}
               <div className="w-full">
                 <OnboardingForm
                   onSubmit={handleSubmit}
@@ -211,7 +291,6 @@ export default function OnboardingPage() {
                 />
               </div>
 
-              {/* Rodapé */}
               <div className="mt-8 text-center pb-8">
                 <p className="text-xs" style={{ color: '#64748B' }}>
                   Já tem uma conta?{' '}

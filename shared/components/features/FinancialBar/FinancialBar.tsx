@@ -1,11 +1,11 @@
 'use client'
 
 /**
- * FinancialBar — exibe o resumo financeiro do casamento
- * Inclui barra de progresso verde e alerta colorido por comprometimento do orçamento
+ * FinancialBar com visual mais premium
  */
 
 import { useMemo } from 'react'
+import { motion } from 'framer-motion'
 import { formatCurrency, getFinancialAlertLevel } from '@/utils/formatters'
 
 interface IFinancialBarProps {
@@ -55,80 +55,41 @@ export function FinancialBar({ totalBudget, totalPaid }: IFinancialBarProps) {
 
   const alert = ALERT_CONFIG[alertLevel]
 
-  // Caso sem orçamento cadastrado
   if (totalBudget <= 0) {
     return (
-      <section
-        aria-label="Resumo financeiro"
-        className="mx-4 mb-4 p-4 bg-white rounded-lg shadow-sm border border-gray-100"
-      >
-        <h2 className="text-base font-semibold text-text-primary mb-2">
-          💰 Financeiro
-        </h2>
-        <p className="text-sm text-text-secondary">
-          Nenhum orçamento cadastrado ainda. Configure nas configurações do casal.
-        </p>
+      <section className="mx-3 mb-4 p-4 bg-white rounded-2xl shadow-2xl border border-gray-200">
+        <h2 className="text-sm font-semibold text-text-primary mb-2">💰 Financeiro</h2>
+        <p className="text-xs text-text-secondary">Nenhum orçamento cadastrado ainda.</p>
       </section>
     )
   }
 
   return (
-    <section
-      aria-label="Resumo financeiro do casamento"
-      className="mx-4 mb-4 p-4 bg-white rounded-lg shadow-sm border border-gray-100"
-    >
-      {/* Título da seção */}
-      <div className="flex items-center justify-between mb-3">
-        <h2 className="text-base font-semibold text-text-primary">
-          💰 Financeiro
-        </h2>
-        <span className="text-xs text-text-secondary">
-          {progress}% pago
-        </span>
+    <section className="mx-3 mb-4 p-4 bg-white rounded-2xl shadow-2xl border border-gray-200">
+      <div className="flex items-center justify-between mb-2">
+        <h2 className="text-sm font-semibold text-text-primary">💰 Financeiro</h2>
+        <span className="text-xs text-text-secondary">{progress}% pago</span>
       </div>
 
-      {/* Resumo em texto */}
-      <p className="text-sm text-text-secondary mb-1">
-        <span className="font-semibold text-success-dark">
-          {formatCurrency(totalPaid)}
-        </span>{' '}
-        pagos de{' '}
-        <span className="font-semibold text-text-primary">
-          {formatCurrency(totalBudget)}
-        </span>{' '}
-        planejados
+      <p className="text-xs text-text-secondary mb-1">
+        <span className="font-semibold text-success-dark">{formatCurrency(totalPaid)}</span> pagos de{' '}
+        <span className="font-semibold text-text-primary">{formatCurrency(totalBudget)}</span>
       </p>
-      <p className="text-sm text-text-secondary mb-3">
-        Falta{' '}
-        <span className="font-semibold text-primary-dark">
-          {formatCurrency(remaining)}
-        </span>
+      <p className="text-xs text-text-secondary mb-3">
+        Falta <span className="font-semibold text-primary-dark">{formatCurrency(remaining)}</span>
       </p>
 
-      {/* Barra de progresso */}
-      <div
-        role="progressbar"
-        aria-valuenow={progress}
-        aria-valuemin={0}
-        aria-valuemax={100}
-        aria-label={`${progress}% do orçamento já foi pago`}
-        className="w-full h-3 bg-gray-100 rounded-full overflow-hidden mb-3"
-      >
-        <div
-          className="h-full bg-success-DEFAULT rounded-full transition-all duration-500"
-          style={{ width: `${progress}%` }}
+      <div className="w-full h-3 bg-gray-100 rounded-full overflow-hidden mb-3">
+        <motion.div
+          className="h-full bg-success-DEFAULT rounded-full"
+          initial={{ width: 0 }}
+          animate={{ width: `${progress}%` }}
+          transition={{ duration: 1.2, ease: 'easeOut' }}
         />
       </div>
 
-      {/* Alerta de status */}
-      <div
-        role="status"
-        className={`
-          flex items-start gap-2 px-3 py-2 rounded-md border text-sm
-          ${alert.bg} ${alert.border} ${alert.text}
-        `}
-      >
-        <span aria-hidden="true">{alert.icon}</span>
+      <div className={`flex items-start gap-2 px-3 py-2 rounded-xl border text-xs ${alert.bg} ${alert.border} ${alert.text}`}>
+        <span>{alert.icon}</span>
         <span>{alert.message}</span>
       </div>
     </section>

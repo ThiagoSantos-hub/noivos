@@ -1,7 +1,7 @@
 'use client'
 
 /**
- * Página de Financeiro - com lógica de Orçamento Planejado + Total de Despesas
+ * Página de Financeiro - com edição de orçamento e despesas
  */
 
 import { useState, useEffect } from 'react'
@@ -14,7 +14,9 @@ export default function FinanceiroPage() {
   const [expenses, setExpenses] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
   const [showForm, setShowForm] = useState(false)
+  const [editingExpense, setEditingExpense] = useState<any>(null)
   const [newExpense, setNewExpense] = useState({ name: '', amount: '', paid: '' })
+  const [plannedBudgetInput, setPlannedBudgetInput] = useState('')
 
   const loadExpenses = async () => {
     if (!couple?.id) return
@@ -29,7 +31,10 @@ export default function FinanceiroPage() {
   }
 
   useEffect(() => {
-    if (couple?.id) loadExpenses()
+    if (couple?.id) {
+      loadExpenses()
+      setPlannedBudgetInput((couple.total_budget ?? 0).toString())
+    }
   }, [couple?.id])
 
   if (coupleLoading || loading || !couple) return <div className="p-4">Carregando...</div>
@@ -39,6 +44,16 @@ export default function FinanceiroPage() {
   const totalPaid = expenses.reduce((sum, exp) => sum + (exp.paid_amount || 0), 0)
   const remainingBudget = Math.max(0, totalPlanned - totalExpenses)
   const progress = totalPlanned > 0 ? Math.round((totalPaid / totalPlanned) * 100) : 0
+
+  // Salvar orçamento planejado
+  const savePlannedBudget = async () => {
+    const newBudget = parseFloat(plannedBudgetInput)
+    if (isNaN(newBudget) || newBudget < 0) {
+      alert('Valor inválido')
+      return
+    }
+    await updateCoupleData({ total_budget: newBudget })
+  }
 
   const handleAddExpense = async () => {
     const amountNum = parseFloat(newExpense.amount)
@@ -68,9 +83,68 @@ export default function FinanceiroPage() {
     await loadExpenses()
   }
 
+  // Editar despesa
+  const startEditExpense = (exp: any) => {
+    setEditingExpense(exp)
+    setNewExpense({
+      name: exp.name,
+      amount: exp.amount.toString(),
+      paid: (exp.paid_amount || 0).toString(),
+    })
+    setShowForm(true)
+  }
+
+  const saveEditExpense = async () => {
+    if (!editingExpense) return
+
+    const amountNum = parseFloat(newExpense.amount)
+    const paidNum = parseFloat(newExpense.paid) || 0
+
+    const { error } = await supabase
+      .from('expenses')
+      .update({
+        name: newExpense.name.trim(),
+        amount: amountNum,
+        paid_amount: paidNum,
+      })
+      .eq('id', editingExpense.id)
+
+    if (error) {
+      alert('Erro ao atualizar despesa.')
+      return
+    }
+
+    setEditingExpense(null)
+    setNewExpense({ name: '', amount: '', paid: '' })
+    setShowForm(false)
+    await loadExpenses()
+  }
+
+  const cancelEdit = () => {
+    setEditingExpense(null)
+    setNewExpense({ name: '', amount: '', paid: '' })
+    setShowForm(false)
+  }
+
   return (
     <div className="p-4 max-w-3xl mx-auto">
       <h1 className="text-2xl font-bold mb-6">Financeiro</h1>
+
+      {/* Editar Orçamento Planejado */}
+      <div className="flex items-end gap-3 mb-6">
+        <div className="flex-1">
+          <label className="text-sm text-text-secondary">Orçamento Planejado</label>
+          <input
+            type="number"
+            value={plannedBudgetInput}
+            onChange={(e) => setPlannedBudgetInput(e.target.value)}
+            className="w-full border rounded-lg px-3 py-2 text-lg font-bold"
+          />
+        </div>
+        <button onClick={savePlannedBudget} className="px-5 py-2 bg-gray-800 text-white rounded-xl font-medium">
+          Salvar
+        </button>
+      </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
         <div className="bg-white p-4 rounded-2xl shadow-2xl border border-gray-200">
@@ -103,7 +177,9 @@ export default function FinanceiroPage() {
 
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-lg font-semibold">Despesas</h2>
-        <button onClick={() => setShowForm(!showForm)} className="px-4 py-2 bg-blue-600 text-white rounded-xl text-sm font-medium">+ Adicionar Despesa</button>
+        <button onClick={() => { setEditingExpense(null); setShowForm(!showForm); }} className="px-4 py-2 bg-blue-600 text-white rounded-xl text-sm font-medium">
+          + Adicionar Despesa
+        </button>
       </div>
 
       {showForm && (
@@ -113,7 +189,12 @@ export default function FinanceiroPage() {
             <input type="number" placeholder="Valor total" value={newExpense.amount} onChange={(e) => setNewExpense({ ...newExpense, amount: e.target.value })} className="border rounded-lg px-3 py-2" />
             <input type="number" placeholder="Já pago" value={newExpense.paid} onChange={(e) => setNewExpense({ ...newExpense, paid: e.target.value })} className="border rounded-lg px-3 py-2" />
           </div>
-          <button onClick={handleAddExpense} className="mt-3 w-full bg-green-600 text-white py-2.5 rounded-xl font-semibold">Adicionar Despesa</button>
+          <div className="flex gap-2 mt-3">
+            <button onClick={editingExpense ? saveEditExpense : handleAddExpense} className="flex-1 bg-green-600 text-white py-2.5 rounded-xl font-semibold">
+              {editingExpense ? 'Salvar Alterações' : 'Adicionar Despesa'}
+            </button>
+            <button onClick={cancelEdit} className="px-6 bg-gray-200 rounded-xl">Cancelar</button>
+          </div>
         </div>
       )}
 
@@ -127,9 +208,12 @@ export default function FinanceiroPage() {
                 <p className="font-semibold truncate">{exp.name}</p>
                 <p className="text-sm text-text-secondary">{formatCurrency(exp.paid_amount || 0)} pagos de {formatCurrency(exp.amount)}</p>
               </div>
-              <div className="text-right flex-shrink-0 ml-3">
-                <p className="font-bold text-primary-dark">{formatCurrency((exp.amount || 0) - (exp.paid_amount || 0))}</p>
-                <p className="text-xs text-text-secondary">restante</p>
+              <div className="flex items-center gap-3">
+                <div className="text-right">
+                  <p className="font-bold text-primary-dark">{formatCurrency((exp.amount || 0) - (exp.paid_amount || 0))}</p>
+                  <p className="text-xs text-text-secondary">restante</p>
+                </div>
+                <button onClick={() => startEditExpense(exp)} className="text-blue-600 text-sm underline">Editar</button>
               </div>
             </div>
           ))

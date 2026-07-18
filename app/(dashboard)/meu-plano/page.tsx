@@ -75,11 +75,11 @@ export default function MeuPlanoPage() {
         </div>
       </div>
 
-      {/* Botão de pagamento */}
+      {/* Botão de renovar */}
       <button
         className="w-full bg-green-600 text-white py-3.5 rounded-2xl font-bold text-base shadow-lg active:scale-[0.98] transition-all"
       >
-        Pagar agora — {plano.valorPromocional}
+        Renovar
       </button>
 
       <p className="text-xs text-center text-text-secondary mt-4">

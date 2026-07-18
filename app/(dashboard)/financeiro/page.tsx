@@ -108,7 +108,6 @@ export default function FinanceiroPage() {
         <button onClick={() => { setEditingExpense(null); setShowForm(true) }} className="px-4 py-2 bg-blue-600 text-white rounded-xl text-sm font-medium">+ Adicionar Despesa</button>
       </div>
 
-      {/* Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
         <div className="bg-white p-4 rounded-2xl shadow-2xl border border-gray-200 relative">
           <div className="flex justify-between items-start">

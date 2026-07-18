@@ -172,7 +172,6 @@ export default function ConvidadosPage() {
       {/* Grupos de Convidados */}
       {Object.entries(GROUP_LABELS).map(([key, label]) => {
         const groupGuests = groupedGuests[key as keyof typeof groupedGuests] || []
-        const confirmedInGroup = groupGuests.filter(g => g.confirmed).length
 
         return (
           <div key={key} className="bg-white rounded-2xl shadow border mb-4 overflow-hidden">

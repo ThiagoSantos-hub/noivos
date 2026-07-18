@@ -1,7 +1,7 @@
 'use client'
 
 /**
- * Página de Financeiro - versão completa com Supabase
+ * Página de Financeiro - com lógica de Orçamento Planejado + Total de Despesas
  */
 
 import { useState, useEffect } from 'react'
@@ -34,10 +34,11 @@ export default function FinanceiroPage() {
 
   if (coupleLoading || loading || !couple) return <div className="p-4">Carregando...</div>
 
+  const totalPlanned = couple.total_budget ?? 0
+  const totalExpenses = expenses.reduce((sum, exp) => sum + (exp.amount || 0), 0)
   const totalPaid = expenses.reduce((sum, exp) => sum + (exp.paid_amount || 0), 0)
-  const totalBudget = couple.total_budget ?? 0
-  const remaining = Math.max(0, totalBudget - totalPaid)
-  const progress = totalBudget > 0 ? Math.round((totalPaid / totalBudget) * 100) : 0
+  const remainingBudget = Math.max(0, totalPlanned - totalExpenses)
+  const progress = totalPlanned > 0 ? Math.round((totalPaid / totalPlanned) * 100) : 0
 
   const handleAddExpense = async () => {
     const amountNum = parseFloat(newExpense.amount)
@@ -71,18 +72,22 @@ export default function FinanceiroPage() {
     <div className="p-4 max-w-3xl mx-auto">
       <h1 className="text-2xl font-bold mb-6">Financeiro</h1>
 
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
-        <div className="bg-white p-4 rounded-2xl shadow-2xl border border-gray-200 min-w-0">
-          <p className="text-sm text-text-secondary mb-1">Orçamento Total</p>
-          <p className="text-xl sm:text-2xl font-bold break-words">{formatCurrency(totalBudget)}</p>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        <div className="bg-white p-4 rounded-2xl shadow-2xl border border-gray-200">
+          <p className="text-sm text-text-secondary mb-1">Orçamento Planejado</p>
+          <p className="text-2xl font-bold">{formatCurrency(totalPlanned)}</p>
         </div>
-        <div className="bg-white p-4 rounded-2xl shadow-2xl border border-gray-200 min-w-0">
+        <div className="bg-white p-4 rounded-2xl shadow-2xl border border-gray-200">
+          <p className="text-sm text-text-secondary mb-1">Total de Despesas</p>
+          <p className="text-2xl font-bold text-primary-dark">{formatCurrency(totalExpenses)}</p>
+        </div>
+        <div className="bg-white p-4 rounded-2xl shadow-2xl border border-gray-200">
           <p className="text-sm text-text-secondary mb-1">Já Pago</p>
-          <p className="text-xl sm:text-2xl font-bold text-success-dark break-words">{formatCurrency(totalPaid)}</p>
+          <p className="text-2xl font-bold text-success-dark">{formatCurrency(totalPaid)}</p>
         </div>
-        <div className="bg-white p-4 rounded-2xl shadow-2xl border border-gray-200 min-w-0">
-          <p className="text-sm text-text-secondary mb-1">Falta Pagar</p>
-          <p className="text-xl sm:text-2xl font-bold text-primary-dark break-words">{formatCurrency(remaining)}</p>
+        <div className="bg-white p-4 rounded-2xl shadow-2xl border border-gray-200">
+          <p className="text-sm text-text-secondary mb-1">Restante do Orçamento</p>
+          <p className="text-2xl font-bold text-primary-dark">{formatCurrency(remainingBudget)}</p>
         </div>
       </div>
 

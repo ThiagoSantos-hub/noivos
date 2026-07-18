@@ -1,7 +1,7 @@
 'use client'
 
 /**
- * Página de Financeiro - edição inline limpa
+ * Página de Financeiro - botão de despesa dentro da seção
  */
 
 import { useState, useEffect } from 'react'
@@ -99,13 +99,10 @@ export default function FinanceiroPage() {
 
   return (
     <div className="p-4 max-w-3xl mx-auto">
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold">Financeiro</h1>
-        <button onClick={() => { setEditingExpense(null); setShowForm(true) }} className="px-4 py-2 bg-blue-600 text-white rounded-xl text-sm font-medium">+ Adicionar Despesa</button>
-      </div>
+      <h1 className="text-2xl font-bold mb-6">Financeiro</h1>
 
+      {/* Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-        {/* Orçamento Planejado com edição inline */}
         <div className="bg-white p-4 rounded-2xl shadow-2xl border border-gray-200">
           {!editingBudget ? (
             <div className="flex justify-between items-start">
@@ -121,13 +118,7 @@ export default function FinanceiroPage() {
             <div>
               <p className="text-sm text-text-secondary mb-1">Orçamento Planejado</p>
               <div className="flex gap-2">
-                <input
-                  type="number"
-                  value={budgetValue}
-                  onChange={(e) => setBudgetValue(e.target.value)}
-                  className="flex-1 border rounded-lg px-2 py-1 text-lg font-bold"
-                  autoFocus
-                />
+                <input type="number" value={budgetValue} onChange={(e) => setBudgetValue(e.target.value)} className="flex-1 border rounded-lg px-2 py-1 text-lg font-bold" autoFocus />
                 <button onClick={saveBudget} className="p-1.5 text-green-600 hover:bg-green-50 rounded"><Check size={18} /></button>
                 <button onClick={() => setEditingBudget(false)} className="p-1.5 text-red-600 hover:bg-red-50 rounded"><X size={18} /></button>
               </div>
@@ -161,8 +152,15 @@ export default function FinanceiroPage() {
         </div>
       </div>
 
-      <div className="flex justify-between items-center mb-4">
+      {/* Seção de Despesas com botão dentro */}
+      <div className="mb-4 flex items-center justify-between">
         <h2 className="text-lg font-semibold">Despesas</h2>
+        <button 
+          onClick={() => { setEditingExpense(null); setShowForm(true) }} 
+          className="px-4 py-2 bg-blue-600 text-white rounded-xl text-sm font-medium"
+        >
+          + Adicionar Despesa
+        </button>
       </div>
 
       {showForm && (

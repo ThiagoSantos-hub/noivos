@@ -6,7 +6,6 @@
 
 import { useState } from 'react'
 import { X, Trash2, Loader2 } from 'lucide-react'
-import { Button, Input } from '@/components/ui'
 import type {
   Task,
   TaskCategory,

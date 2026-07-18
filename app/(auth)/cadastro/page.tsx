@@ -91,6 +91,7 @@ export default function OnboardingPage() {
       }
 
       // 1. Criar conta da noiva no Supabase Auth
+      console.log('Iniciando cadastro da noiva...', { email: data.email_noiva })
       const { data: authDataNoiva, error: authErrorNoiva } = await supabase.auth.signUp({
         email: data.email_noiva.trim().toLowerCase(),
         password,
@@ -115,6 +116,7 @@ export default function OnboardingPage() {
       setProgress(30)
 
       // 2. Criar conta do noivo no Supabase Auth
+      console.log('Iniciando cadastro do noivo...', { email: data.email_noivo })
       const { data: authDataNoivo, error: authErrorNoivo } = await supabase.auth.signUp({
         email: data.email_noivo.trim().toLowerCase(),
         password,

@@ -185,7 +185,6 @@ export default function LandingPage() {
           </div>
           
           <p className="text-sm text-slate-400">
-            Pagamento seguro via Asaas (Pix ou Cartão de Crédito)
           </p>
         </div>
       </section>

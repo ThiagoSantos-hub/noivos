@@ -95,11 +95,13 @@ export async function POST(request: Request): Promise<NextResponse> {
 
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL
     const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY
+    const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+    const finalKey = serviceRoleKey || anonKey
 
-    if (!supabaseUrl || !serviceRoleKey) {
+    if (!supabaseUrl || !finalKey) {
       const missingEnvironmentVariables = [
         !supabaseUrl ? 'NEXT_PUBLIC_SUPABASE_URL ou SUPABASE_URL' : null,
-        !serviceRoleKey ? 'SUPABASE_SERVICE_ROLE_KEY' : null,
+        !finalKey ? 'SUPABASE_SERVICE_ROLE_KEY ou NEXT_PUBLIC_SUPABASE_ANON_KEY' : null,
       ].filter((variable): variable is string => Boolean(variable))
 
       console.error('Configuração incompleta do Supabase na rota de registro', {
@@ -110,6 +112,10 @@ export async function POST(request: Request): Promise<NextResponse> {
         { error: 'Configuração do servidor incompleta para concluir o registro' },
         { status: 500 }
       )
+    }
+
+    if (!serviceRoleKey) {
+      console.warn('Aviso: SUPABASE_SERVICE_ROLE_KEY ausente. Usando anon key para o registro. Isso pode falhar se o RLS estiver ativado.')
     }
 
     const payload: CoupleInsertPayload = {
@@ -125,7 +131,7 @@ export async function POST(request: Request): Promise<NextResponse> {
       groom_name: body.nome_noivo as string,
     }
 
-    const supabaseAdmin = createClient(supabaseUrl, serviceRoleKey, {
+    const supabaseAdmin = createClient(supabaseUrl, finalKey, {
       auth: {
         autoRefreshToken: false,
         persistSession: false,

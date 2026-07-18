@@ -1,21 +1,20 @@
 'use client'
 
 /**
- * Página Meu Plano — informações de assinatura e pagamento
+ * Página Meu Plano — plano promocional R$ 9,90
  */
 
 import Link from 'next/link'
 import { ArrowLeft, CreditCard, Calendar, CheckCircle } from 'lucide-react'
 
 export default function MeuPlanoPage() {
-  // Dados de exemplo — depois conectamos com o banco real
   const plano = {
     nome: 'Plano Casal',
-    valor: 'R$ 29,90',
+    valorOriginal: 'R$ 47,90',
+    valorPromocional: 'R$ 9,90',
     periodo: 'mensal',
     status: 'ativo',
     vencimento: '15/08/2026',
-    proximoPagamento: '15/08/2026',
   }
 
   return (
@@ -35,13 +34,21 @@ export default function MeuPlanoPage() {
           </div>
           <div>
             <p className="font-bold text-lg">{plano.nome}</p>
-            <p className="text-sm text-text-secondary">{plano.valor} / {plano.periodo}</p>
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-gray-400 line-through">{plano.valorOriginal}</span>
+              <span className="text-base font-bold text-green-600">{plano.valorPromocional}</span>
+              <span className="text-xs text-text-secondary">/ {plano.periodo}</span>
+            </div>
           </div>
         </div>
 
-        <div className="flex items-center gap-2 mb-1">
+        <div className="flex items-center gap-2">
           <CheckCircle size={16} className="text-green-600" />
           <span className="text-sm font-medium text-green-700 capitalize">{plano.status}</span>
+        </div>
+
+        <div className="mt-3 inline-block bg-green-50 text-green-700 text-xs font-semibold px-3 py-1 rounded-full">
+          Promoção ativa
         </div>
       </div>
 
@@ -60,7 +67,10 @@ export default function MeuPlanoPage() {
 
           <div className="flex items-center justify-between">
             <span className="text-sm text-text-secondary">Valor</span>
-            <span className="font-semibold text-sm">{plano.valor}</span>
+            <div className="text-right">
+              <span className="text-xs text-gray-400 line-through mr-2">{plano.valorOriginal}</span>
+              <span className="font-bold text-green-600">{plano.valorPromocional}</span>
+            </div>
           </div>
         </div>
       </div>
@@ -69,7 +79,7 @@ export default function MeuPlanoPage() {
       <button
         className="w-full bg-green-600 text-white py-3.5 rounded-2xl font-bold text-base shadow-lg active:scale-[0.98] transition-all"
       >
-        Pagar agora
+        Pagar agora — {plano.valorPromocional}
       </button>
 
       <p className="text-xs text-center text-text-secondary mt-4">

@@ -1,13 +1,14 @@
 'use client'
 
 /**
- * Página de Financeiro - com edição de orçamento e despesas
+ * Página de Financeiro - UI limpa com ícones de lápis para edição
  */
 
 import { useState, useEffect } from 'react'
 import { useCouple } from '@/hooks/useCouple'
 import { supabase } from '@/services/supabase'
 import { formatCurrency } from '@/utils/formatters'
+import { Pencil } from 'lucide-react'
 
 export default function FinanceiroPage() {
   const { couple, isLoading: coupleLoading, updateCoupleData } = useCouple()
@@ -16,7 +17,8 @@ export default function FinanceiroPage() {
   const [showForm, setShowForm] = useState(false)
   const [editingExpense, setEditingExpense] = useState<any>(null)
   const [newExpense, setNewExpense] = useState({ name: '', amount: '', paid: '' })
-  const [plannedBudgetInput, setPlannedBudgetInput] = useState('')
+  const [isEditingBudget, setIsEditingBudget] = useState(false)
+  const [budgetInput, setBudgetInput] = useState('')
 
   const loadExpenses = async () => {
     if (!couple?.id) return
@@ -33,7 +35,7 @@ export default function FinanceiroPage() {
   useEffect(() => {
     if (couple?.id) {
       loadExpenses()
-      setPlannedBudgetInput((couple.total_budget ?? 0).toString())
+      setBudgetInput((couple.total_budget ?? 0).toString())
     }
   }, [couple?.id])
 
@@ -45,39 +47,40 @@ export default function FinanceiroPage() {
   const remainingBudget = Math.max(0, totalPlanned - totalExpenses)
   const progress = totalPlanned > 0 ? Math.round((totalPaid / totalPlanned) * 100) : 0
 
-  const savePlannedBudget = async () => {
-    const newBudget = parseFloat(plannedBudgetInput)
-    if (isNaN(newBudget) || newBudget < 0) {
-      alert('Valor inválido')
-      return
-    }
-    await updateCoupleData({ total_budget: newBudget })
+  const saveBudget = async () => {
+    const newValue = parseFloat(budgetInput)
+    if (isNaN(newValue) || newValue < 0) return
+    await updateCoupleData({ total_budget: newValue })
+    setIsEditingBudget(false)
   }
 
-  const handleAddExpense = async () => {
+  const handleAddOrUpdateExpense = async () => {
     const amountNum = parseFloat(newExpense.amount)
     const paidNum = parseFloat(newExpense.paid) || 0
 
     if (!newExpense.name.trim() || isNaN(amountNum) || amountNum <= 0) {
-      alert('Preencha o nome e um valor válido.')
+      alert('Preencha nome e valor válido')
       return
     }
 
-    const { error } = await supabase.from('expenses').insert({
-      couple_id: couple.id,
-      name: newExpense.name.trim(),
-      amount: amountNum,
-      paid_amount: paidNum,
-    })
-
-    if (error) {
-      alert('Erro ao salvar despesa.')
-      return
+    if (editingExpense) {
+      await supabase.from('expenses').update({
+        name: newExpense.name.trim(),
+        amount: amountNum,
+        paid_amount: paidNum
+      }).eq('id', editingExpense.id)
+    } else {
+      await supabase.from('expenses').insert({
+        couple_id: couple.id,
+        name: newExpense.name.trim(),
+        amount: amountNum,
+        paid_amount: paidNum
+      })
+      await updateCoupleData({ total_paid: totalPaid + paidNum })
     }
-
-    await updateCoupleData({ total_paid: totalPaid + paidNum })
 
     setNewExpense({ name: '', amount: '', paid: '' })
+    setEditingExpense(null)
     setShowForm(false)
     await loadExpenses()
   }
@@ -87,38 +90,12 @@ export default function FinanceiroPage() {
     setNewExpense({
       name: exp.name,
       amount: exp.amount.toString(),
-      paid: (exp.paid_amount || 0).toString(),
+      paid: (exp.paid_amount || 0).toString()
     })
     setShowForm(true)
   }
 
-  const saveEditExpense = async () => {
-    if (!editingExpense) return
-
-    const amountNum = parseFloat(newExpense.amount)
-    const paidNum = parseFloat(newExpense.paid) || 0
-
-    const { error } = await supabase
-      .from('expenses')
-      .update({
-        name: newExpense.name.trim(),
-        amount: amountNum,
-        paid_amount: paidNum,
-      })
-      .eq('id', editingExpense.id)
-
-    if (error) {
-      alert('Erro ao atualizar despesa.')
-      return
-    }
-
-    setEditingExpense(null)
-    setNewExpense({ name: '', amount: '', paid: '' })
-    setShowForm(false)
-    await loadExpenses()
-  }
-
-  const cancelEdit = () => {
+  const cancelForm = () => {
     setEditingExpense(null)
     setNewExpense({ name: '', amount: '', paid: '' })
     setShowForm(false)
@@ -126,41 +103,50 @@ export default function FinanceiroPage() {
 
   return (
     <div className="p-4 max-w-3xl mx-auto">
-      <h1 className="text-2xl font-bold mb-6">Financeiro</h1>
-
-      <div className="flex items-end gap-3 mb-6">
-        <div className="flex-1">
-          <label className="text-sm text-text-secondary">Orçamento Planejado</label>
-          <input
-            type="number"
-            value={plannedBudgetInput}
-            onChange={(e) => setPlannedBudgetInput(e.target.value)}
-            className="w-full border rounded-lg px-3 py-2 text-lg font-bold"
-          />
-        </div>
-        <button onClick={savePlannedBudget} className="px-5 py-2 bg-gray-800 text-white rounded-xl font-medium">
-          Salvar
-        </button>
+      <div className="flex items-center justify-between mb-6">
+        <h1 className="text-2xl font-bold">Financeiro</h1>
+        <button onClick={() => { setEditingExpense(null); setShowForm(true) }} className="px-4 py-2 bg-blue-600 text-white rounded-xl text-sm font-medium">+ Adicionar Despesa</button>
       </div>
 
+      {/* Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-        <div className="bg-white p-4 rounded-2xl shadow-2xl border border-gray-200">
-          <p className="text-sm text-text-secondary mb-1">Orçamento Planejado</p>
-          <p className="text-2xl font-bold">{formatCurrency(totalPlanned)}</p>
+        <div className="bg-white p-4 rounded-2xl shadow-2xl border border-gray-200 relative">
+          <div className="flex justify-between items-start">
+            <div>
+              <p className="text-sm text-text-secondary">Orçamento Planejado</p>
+              <p className="text-2xl font-bold">{formatCurrency(totalPlanned)}</p>
+            </div>
+            <button onClick={() => setIsEditingBudget(true)} className="text-gray-400 hover:text-gray-600">
+              <Pencil size={16} />
+            </button>
+          </div>
         </div>
+
         <div className="bg-white p-4 rounded-2xl shadow-2xl border border-gray-200">
           <p className="text-sm text-text-secondary mb-1">Total de Despesas</p>
           <p className="text-2xl font-bold text-primary-dark">{formatCurrency(totalExpenses)}</p>
         </div>
+
         <div className="bg-white p-4 rounded-2xl shadow-2xl border border-gray-200">
           <p className="text-sm text-text-secondary mb-1">Já Pago</p>
           <p className="text-2xl font-bold text-success-dark">{formatCurrency(totalPaid)}</p>
         </div>
+
         <div className="bg-white p-4 rounded-2xl shadow-2xl border border-gray-200">
           <p className="text-sm text-text-secondary mb-1">Restante do Orçamento</p>
           <p className="text-2xl font-bold text-primary-dark">{formatCurrency(remainingBudget)}</p>
         </div>
       </div>
+
+      {isEditingBudget && (
+        <div className="bg-white p-4 rounded-2xl shadow mb-4 border">
+          <div className="flex gap-2">
+            <input type="number" value={budgetInput} onChange={(e) => setBudgetInput(e.target.value)} className="flex-1 border rounded-lg px-3 py-2" />
+            <button onClick={saveBudget} className="px-4 bg-green-600 text-white rounded-lg">Salvar</button>
+            <button onClick={() => setIsEditingBudget(false)} className="px-4 bg-gray-200 rounded-lg">Cancelar</button>
+          </div>
+        </div>
+      )}
 
       <div className="mb-6">
         <div className="flex justify-between text-sm mb-1.5">
@@ -174,7 +160,6 @@ export default function FinanceiroPage() {
 
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-lg font-semibold">Despesas</h2>
-        <button onClick={() => { setEditingExpense(null); setShowForm(!showForm); }} className="px-4 py-2 bg-blue-600 text-white rounded-xl text-sm font-medium">+ Adicionar Despesa</button>
       </div>
 
       {showForm && (
@@ -185,10 +170,10 @@ export default function FinanceiroPage() {
             <input type="number" placeholder="Já pago" value={newExpense.paid} onChange={(e) => setNewExpense({ ...newExpense, paid: e.target.value })} className="border rounded-lg px-3 py-2" />
           </div>
           <div className="flex gap-2 mt-3">
-            <button onClick={editingExpense ? saveEditExpense : handleAddExpense} className="flex-1 bg-green-600 text-white py-2.5 rounded-xl font-semibold">
+            <button onClick={handleAddOrUpdateExpense} className="flex-1 bg-green-600 text-white py-2.5 rounded-xl font-semibold">
               {editingExpense ? 'Salvar Alterações' : 'Adicionar Despesa'}
             </button>
-            <button onClick={cancelEdit} className="px-6 bg-gray-200 rounded-xl">Cancelar</button>
+            <button onClick={cancelForm} className="px-6 bg-gray-200 rounded-xl">Cancelar</button>
           </div>
         </div>
       )}
@@ -208,7 +193,9 @@ export default function FinanceiroPage() {
                   <p className="font-bold text-primary-dark">{formatCurrency((exp.amount || 0) - (exp.paid_amount || 0))}</p>
                   <p className="text-xs text-text-secondary">restante</p>
                 </div>
-                <button onClick={() => startEditExpense(exp)} className="text-blue-600 text-sm underline">Editar</button>
+                <button onClick={() => startEditExpense(exp)} className="text-gray-400 hover:text-gray-600">
+                  <Pencil size={16} />
+                </button>
               </div>
             </div>
           ))

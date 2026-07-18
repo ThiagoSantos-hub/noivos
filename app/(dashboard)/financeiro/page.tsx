@@ -99,9 +99,10 @@ export default function FinanceiroPage() {
 
   return (
     <div className="p-4 max-w-3xl mx-auto">
-      <h1 className="text-2xl font-bold mb-6">Financeiro</h1>
+      <div className="flex items-center justify-between mb-6">
+        <h1 className="text-2xl font-bold">Financeiro</h1>
+      </div>
 
-      {/* Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
         <div className="bg-white p-4 rounded-2xl shadow-2xl border border-gray-200">
           {!editingBudget ? (
@@ -152,15 +153,9 @@ export default function FinanceiroPage() {
         </div>
       </div>
 
-      {/* Seção de Despesas com botão dentro */}
       <div className="mb-4 flex items-center justify-between">
         <h2 className="text-lg font-semibold">Despesas</h2>
-        <button 
-          onClick={() => { setEditingExpense(null); setShowForm(true) }} 
-          className="px-4 py-2 bg-blue-600 text-white rounded-xl text-sm font-medium"
-        >
-          + Adicionar Despesa
-        </button>
+        <button onClick={() => { setEditingExpense(null); setShowForm(true) }} className="px-4 py-2 bg-blue-600 text-white rounded-xl text-sm font-medium">+ Adicionar Despesa</button>
       </div>
 
       {showForm && (

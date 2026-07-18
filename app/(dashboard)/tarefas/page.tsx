@@ -1,7 +1,7 @@
 'use client'
 
 /**
- * TarefasPage — com botões sempre visíveis e estilo 3D
+ * TarefasPage — botões limpos e sempre visíveis
  */
 
 import { useState, useMemo, useCallback } from 'react'
@@ -88,24 +88,12 @@ export default function TarefasPage() {
     <div className="flex flex-col min-h-full pb-20">
       <title>Tarefas — Noivos</title>
 
-      {/* Header fixo */}
+      {/* Header */}
       <header className="sticky top-0 z-40 bg-white px-4 pt-6 pb-4 shadow-md">
         <div className="flex justify-between items-center mb-3">
           <h1 className="text-2xl font-bold text-text-primary">
-            Tarefas ✅
+            Tarefas
           </h1>
-          <button
-            onClick={handleAddClick}
-            className="
-              w-12 h-12 bg-green-600 text-white rounded-full
-              flex items-center justify-center shadow-2xl
-              hover:bg-green-700 active:scale-95 transition-all
-              border-2 border-green-500
-            "
-            aria-label="Adicionar nova tarefa"
-          >
-            <Plus size={26} strokeWidth={2.5} />
-          </button>
         </div>
 
         {/* Contador de progresso */}
@@ -155,7 +143,6 @@ export default function TarefasPage() {
       <main className="flex-1 px-4 pt-4">
         {isLoading ? (
           <div className="space-y-4">
-            <div className="animate-pulse bg-white h-8 w-40 rounded-md shadow-sm border border-gray-100" />
             {[1, 2, 3].map((i) => (
               <div
                 key={i}
@@ -187,9 +174,9 @@ export default function TarefasPage() {
               onClick={handleAddClick}
               className="
                 inline-flex items-center gap-2 px-8 py-3.5 bg-green-600
-                text-white rounded-2xl text-base font-bold shadow-2xl
+                text-white rounded-2xl text-base font-bold
+                shadow-[0_8px_20px_rgba(22,163,74,0.35)]
                 hover:bg-green-700 active:scale-95 transition-all
-                border-2 border-green-500
               "
             >
               <Plus size={22} strokeWidth={2.5} />
@@ -199,13 +186,14 @@ export default function TarefasPage() {
         ) : (
           /* Lista por categoria */
           <div className="space-y-6">
-            {/* Botão de adicionar sempre visível quando já tem tarefas */}
+            {/* Botão Nova tarefa — sempre visível e com sombra 3D */}
             <div className="flex justify-end">
               <button
                 onClick={handleAddClick}
                 className="
                   inline-flex items-center gap-2 px-5 py-2.5 bg-green-600
-                  text-white rounded-xl text-sm font-semibold shadow-xl
+                  text-white rounded-xl text-sm font-semibold
+                  shadow-[0_6px_16px_rgba(22,163,74,0.4)]
                   hover:bg-green-700 active:scale-95 transition-all
                 "
               >
@@ -270,7 +258,6 @@ export default function TarefasPage() {
         )}
       </main>
 
-      {/* Modal de formulário */}
       {isFormOpen && (
         <TaskForm
           task={selectedTask}

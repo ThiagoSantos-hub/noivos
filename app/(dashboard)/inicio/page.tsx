@@ -10,7 +10,7 @@ import { CountdownBar } from '@/components/features/CountdownBar'
 import { FinancialBar } from '@/components/features/FinancialBar'
 
 export default function DashboardPage() {
-  const { couple, isLoading, error, updateCoupleData } = useCouple()
+  const { couple, isLoading, error } = useCouple()
 
   if (isLoading) {
     return <div className="p-4">Carregando...</div>

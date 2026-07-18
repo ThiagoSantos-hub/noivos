@@ -9,6 +9,17 @@ import { useCouple } from '@/hooks/useCouple'
 import { supabase } from '@/services/supabase'
 import { Pencil, Check, X, UserPlus } from 'lucide-react'
 
+const GROUP_ORDER = [
+  'familia_noiva',
+  'familia_noivo',
+  'convidado_noiva',
+  'convidado_noivo',
+  'padrinho',
+  'madrinha',
+  'daminhas_pajens',
+  'profissionais_contratados',
+]
+
 const GROUP_LABELS: Record<string, string> = {
   familia_noiva: 'Família da Noiva',
   familia_noivo: 'Família do Noivo',
@@ -16,8 +27,8 @@ const GROUP_LABELS: Record<string, string> = {
   convidado_noivo: 'Convidados do Noivo',
   padrinho: 'Padrinhos do Noivo',
   madrinha: 'Madrinhas da Noiva',
-  profissionais_contratados: 'Profissionais Contratados',
   daminhas_pajens: 'Daminhas e Pajens',
+  profissionais_contratados: 'Profissionais Contratados',
 }
 
 const GROUP_ICONS: Record<string, string> = {
@@ -27,8 +38,8 @@ const GROUP_ICONS: Record<string, string> = {
   convidado_noivo: '🤵‍♂️',
   padrinho: '🤵‍♂️',
   madrinha: '👰‍♀️',
-  profissionais_contratados: '💼',
   daminhas_pajens: '👧👦',
+  profissionais_contratados: '💼',
 }
 
 export default function ConvidadosPage() {
@@ -73,8 +84,8 @@ export default function ConvidadosPage() {
     convidado_noivo: guests.filter(g => g.group_type === 'convidado_noivo'),
     padrinho: guests.filter(g => g.group_type === 'padrinho'),
     madrinha: guests.filter(g => g.group_type === 'madrinha'),
-    profissionais_contratados: guests.filter(g => g.group_type === 'profissionais_contratados'),
     daminhas_pajens: guests.filter(g => g.group_type === 'daminhas_pajens'),
+    profissionais_contratados: guests.filter(g => g.group_type === 'profissionais_contratados'),
   }
 
   const saveExpectedTotal = async () => {
@@ -168,8 +179,9 @@ export default function ConvidadosPage() {
         </div>
       </div>
 
-      {/* Grupos */}
-      {Object.entries(GROUP_LABELS).map(([key, label]) => {
+      {/* Grupos na ordem correta */}
+      {GROUP_ORDER.map((key) => {
+        const label = GROUP_LABELS[key]
         const groupGuests = groupedGuests[key] || []
 
         return (

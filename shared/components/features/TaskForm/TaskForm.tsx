@@ -1,7 +1,7 @@
 'use client'
 
 /**
- * TaskForm — versão compacta para caber melhor no celular
+ * TaskForm — versão compacta e centralizada no celular
  */
 
 import { useState } from 'react'
@@ -104,8 +104,8 @@ export function TaskForm({ task, onSubmit, onDelete, onClose }: ITaskFormProps) 
   }
 
   return (
-    <div className="fixed inset-0 z-[60] flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/50">
-      <div className="bg-white w-full max-w-md rounded-t-2xl sm:rounded-2xl shadow-xl overflow-hidden flex flex-col max-h-[85vh]">
+    <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/50">
+      <div className="bg-white w-full max-w-md rounded-2xl shadow-xl overflow-hidden flex flex-col max-h-[85vh]">
 
         {/* Header */}
         <div className="px-4 py-3 border-b border-gray-100 flex justify-between items-center sticky top-0 bg-white z-10">
